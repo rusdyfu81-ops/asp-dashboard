@@ -1106,10 +1106,9 @@ async function uploadSoal(){
     order_number:parseInt(s.order_number)||1
   }));
 
-  const{ok}=await sb('questions',{
-    method:'POST',
-    headers:{'Prefer':'return=minimal','Content-Type':'application/json'},
-    body:JSON.stringify(soalRows)
+  const{ok}=await sbRpc('insert_questions',{
+    p_quiz_id:quizId,
+    p_questions:soalRows
   });
 
   if(!ok){showToast('Gagal upload soal','error');return;}
