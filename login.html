@@ -469,7 +469,9 @@ async function sbFetch(path, opts = {}) {
 const Session = {
   set(user) {
     localStorage.setItem('asp_user', JSON.stringify(user));
-    localStorage.setItem('asp_token', SUPABASE_ANON); // ganti dengan JWT user nanti
+    // Simpan identifier user agar sb() bisa membedakan anon vs user session
+    localStorage.setItem('asp_token', SUPABASE_ANON);
+    localStorage.setItem('asp_user_id', user.id);
   },
   get() {
     try { return JSON.parse(localStorage.getItem('asp_user')); }

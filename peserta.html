@@ -1018,7 +1018,10 @@ async function submitQuiz() {
     headers: { 'Prefer': 'return=representation' },
     body: JSON.stringify({
       quiz_id: STATE.quizId, user_id: STATE.user.id, asp_id: STATE.asp.id,
-      score, total_correct: correct, total_questions: questions.length
+      score,
+      total_correct: correct,
+      total_questions: questions.length,
+      submitted_at: new Date().toISOString()
     })
   });
 
@@ -1033,8 +1036,18 @@ async function submitQuiz() {
     body: JSON.stringify(answerRows.map(a => ({ ...a, attempt_id: attemptId })))
   });
 
+  // is_passed diisi trigger DB — kalau null, hitung lokal dari passing_score ASP
+  const passingScore = STATE.asp?.passing_score ?? 70;
+  const attemptData = { ...attempt[0] };
+  if (attemptData.is_passed === null || attemptData.is_passed === undefined) {
+    attemptData.is_passed = score >= passingScore;
+  }
+  // Pastikan total_correct & total_questions tersimpan di state
+  attemptData.total_correct = correct;
+  attemptData.total_questions = questions.length;
+
   // Update state
-  STATE.attempts[STATE.quizId] = attempt[0];
+  STATE.attempts[STATE.quizId] = attemptData;
 
   closeQuiz();
   await showHasil(STATE.quizId);
@@ -1131,9 +1144,9 @@ async function changePassword() {
   if (nw.length < 8) { showToast('Password baru minimal 8 karakter', 'error'); return; }
   if (nw !== cf) { showToast('Konfirmasi password tidak cocok', 'error'); return; }
 
-  // Verify old password
-  const { data: valid } = await sbRpc('verify_password', { p_username: STATE.user.username, p_password: old });
-  if (!valid) { showToast('Password lama salah', 'error'); return; }
+  // Verify old password — verify_password RETURNS TABLE (array), bukan BOOLEAN
+  const { ok: vOk, data: vData } = await sbRpc('verify_password', { p_username: STATE.user.username, p_password: old });
+  if (!vOk || !Array.isArray(vData) || vData.length === 0) { showToast('Password lama salah', 'error'); return; }
 
   // Update via RPC (hash baru)
   const { ok } = await sbRpc('change_password', { p_user_id: STATE.user.id, p_new_password: nw });

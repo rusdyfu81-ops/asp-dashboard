@@ -1054,7 +1054,9 @@ function previewSoal(input){
     const wb=XLSX.read(e.target.result,{type:'binary'});
     const ws=wb.Sheets[wb.SheetNames[0]];
     const rows=XLSX.utils.sheet_to_json(ws,{header:1});
-    S.parsedSoal=rows.filter(r=>r[0]).map((r,i)=>({
+    // Lewati baris pertama (header) dan baris kosong
+    const dataRows=rows.slice(1).filter(r=>r[0]&&String(r[0]).trim()!=='Pertanyaan');
+    S.parsedSoal=dataRows.map((r,i)=>({
       question_text:String(r[0]||''),option_a:String(r[1]||''),option_b:String(r[2]||''),
       option_c:String(r[3]||''),option_d:String(r[4]||''),
       correct_answer:String(r[5]||'a').toLowerCase(),order_number:i+1
@@ -1088,7 +1090,9 @@ async function uploadSoal(){
     p_created_by:S.user.id
   });
   if(!qOk){showToast('Gagal membuat kuis','error');return;}
-  quizId=qData;
+  // Supabase wraps scalar RETURNS UUID dalam [{upsert_quiz: 'uuid'}]
+  quizId = Array.isArray(qData) ? qData[0]?.upsert_quiz : qData;
+  if(!quizId){showToast('Gagal mendapatkan ID kuis','error');return;}
 
   // Step 2: Hapus soal lama
   await sbRpc('delete_quiz_questions',{p_quiz_id:quizId});
