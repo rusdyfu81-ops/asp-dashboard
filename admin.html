@@ -687,8 +687,7 @@ let editMemberId=null;
 
 async function loadPeserta(){
   const{ok,data}=await sbRpc('get_asp_members',{p_asp_id:S.currentAsp.id});
-  console.log('get_asp_members raw:', JSON.stringify(data));
-  // RPC returns JSONB — data is the parsed array directly
+  // RPC returns array of rows
   const raw = Array.isArray(data) ? data : (data ? [data] : []);
   const members = raw.map(m=>({
     id:m.member_id, user_id:m.user_id,
@@ -889,25 +888,16 @@ async function saveSesi(){
   const num=document.getElementById('sesiNum').value;
   if(!title){showToast('Judul sesi wajib diisi','error');return;}
   const body={session_number:parseInt(num),title,scheduled_date:document.getElementById('sesiDate').value||null,description:document.getElementById('sesiDesc').value.trim(),asp_id:S.currentAsp.id,created_by:S.user.id};
-  let ok;
-  if(editSesiId){
-    ({ok}=await sbRpc('create_session',{
-      p_asp_id:S.currentAsp.id,p_session_number:parseInt(num),p_title:title,
-      p_description:document.getElementById('sesiDesc').value.trim(),
-      p_scheduled_date:document.getElementById('sesiDate').value||null,
-      p_created_by:S.user.id
-    }));
-    // update existing
-    await sbRpc('toggle_session',{p_session_id:editSesiId,p_is_active:false});
-    editSesiId=null;
-  } else {
-    ({ok}=await sbRpc('create_session',{
-      p_asp_id:S.currentAsp.id,p_session_number:parseInt(num),p_title:title,
-      p_description:document.getElementById('sesiDesc').value.trim(),
-      p_scheduled_date:document.getElementById('sesiDate').value||null,
-      p_created_by:S.user.id
-    }));
-  }
+  const rpcBody={
+    p_asp_id:S.currentAsp.id,
+    p_session_number:parseInt(num),
+    p_title:title,
+    p_description:document.getElementById('sesiDesc').value.trim(),
+    p_scheduled_date:document.getElementById('sesiDate').value||null,
+    p_created_by:S.user.id
+  };
+  editSesiId=null;
+  const{ok}=await sbRpc('upsert_session',rpcBody);
   if(!ok){showToast('Gagal menyimpan sesi','error');return;}
   closeModal('modalAddSesi');
   showToast('Sesi berhasil disimpan!','success');
@@ -1086,13 +1076,15 @@ async function uploadSoal(){
   const existingQuiz=S.currentQuizzes.find(q=>q.session_id===uploadSoalSesiId);
   let quizId;
   if(existingQuiz){
-    // Hapus soal lama
-    await sb(`questions?quiz_id=eq.${existingQuiz.id}`,{method:'DELETE'});
     quizId=existingQuiz.id;
-    await sb(`quizzes?id=eq.${quizId}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({passing_score:S.kuisPassScore,is_active:false})});
+    await sbRpc('upsert_quiz',{
+      p_session_id:uploadSoalSesiId,p_asp_id:S.currentAsp.id,
+      p_title:existingQuiz.title,
+      p_passing_score:S.kuisPassScore,p_created_by:S.user.id
+    });
   } else {
     const sesi=S.currentSessions.find(s=>s.id===uploadSoalSesiId);
-    const{data:newQuizId}=await sbRpc('create_quiz',{
+    const{data:newQuizId}=await sbRpc('upsert_quiz',{
       p_session_id:uploadSoalSesiId,p_asp_id:S.currentAsp.id,
       p_title:`Kuis Sesi ${sesi?.session_number||''}`,
       p_passing_score:S.kuisPassScore,p_created_by:S.user.id
