@@ -687,6 +687,7 @@ let editMemberId=null;
 
 async function loadPeserta(){
   const{ok,data}=await sbRpc('get_asp_members',{p_asp_id:S.currentAsp.id});
+  console.log('get_asp_members raw:', JSON.stringify(data));
   // RPC returns JSONB — data is the parsed array directly
   const raw = Array.isArray(data) ? data : (data ? [data] : []);
   const members = raw.map(m=>({
@@ -924,18 +925,16 @@ async function loadAbsensi(){
   S.absensiData={};
   (existing||[]).forEach(a=>{S.absensiData[a.user_id]=a.is_present;});
 
-  // Load members
-  let members=S.currentAspMembers;
-  if(!members.length){
-    const{data}=await sbRpc('get_asp_members',{p_asp_id:S.currentAsp.id});
-    const raw2=Array.isArray(data)?data:(data?[data]:[]);
-    members=raw2.map(m=>({
-      id:m.member_id,user_id:m.user_id,church:m.church||'',city:m.city||'',
-      is_paid:m.is_paid||false,is_package_received:m.is_package_received||false,
-      users:{id:m.user_id,full_name:m.full_name||'-',phone:m.phone||'-'}
-    }));
-    S.currentAspMembers=members;
-  }
+  // Always reload fresh for absensi
+  const{data:mData}=await sbRpc('get_asp_members',{p_asp_id:S.currentAsp.id});
+  const raw2=Array.isArray(mData)?mData:(mData?[mData]:[]);
+  const members=raw2.map(m=>({
+    id:m.member_id,user_id:m.user_id,church:m.church||'',city:m.city||'',
+    is_paid:m.is_paid||false,is_package_received:m.is_package_received||false,
+    full_name:m.full_name||'-',
+    users:{id:m.user_id,full_name:m.full_name||'-',phone:m.phone||'-'}
+  }));
+  S.currentAspMembers=members;
   renderAbsensi(members,sesiId);
   document.getElementById('btnSimpanAbsensi').style.display='flex';
 }
@@ -950,11 +949,12 @@ function renderAbsensi(members,sesiId){
   document.getElementById('absensiStats').style.display='block';
 
   document.getElementById('absensiList').innerHTML=members.map(m=>{
-    const u=m.users||{};
+    // Support both old format (m.users.full_name) and new format (m.full_name)
+    const nama=(m.users&&m.users.full_name)||m.full_name||'-';
     const isHadir=S.absensiData[m.user_id]===true;
     return`<div class="absen-item">
       <button class="toggle ${isHadir?'':'off'}" id="tog_${m.user_id}" onclick="toggleAbsen('${m.user_id}',this)"></button>
-      <div class="aname">${u.full_name||'-'}</div>
+      <div class="aname">${nama}</div>
       <div class="astatus ${isHadir?'ah':'at'}" id="abs_${m.user_id}">${isHadir?'Hadir':'Tidak Hadir'}</div>
     </div>`;
   }).join('');
