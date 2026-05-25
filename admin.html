@@ -663,16 +663,17 @@ function adjScore(v){scoreVal=Math.max(0,Math.min(100,scoreVal+v));document.getE
 async function createASP(){
   const name=document.getElementById('aspName').value.trim();
   if(!name){showToast('Nama program wajib diisi','error');return;}
-  const {ok}=await sb('asp_programs',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({
-    name,organizer:document.getElementById('aspOrg').value.trim(),
-    city:document.getElementById('aspCity').value.trim(),
-    series_number:parseInt(document.getElementById('aspSeries').value)||null,
-    passing_score:scoreVal,
-    start_date:document.getElementById('aspStart').value||null,
-    end_date:document.getElementById('aspEnd').value||null,
-    description:document.getElementById('aspDesc').value.trim(),
-    is_active:true,created_by:S.user.id
-  })});
+  const {ok,data}=await sbRpc('create_asp_program',{
+    p_name:name,
+    p_organizer:document.getElementById('aspOrg').value.trim(),
+    p_city:document.getElementById('aspCity').value.trim(),
+    p_series_number:parseInt(document.getElementById('aspSeries').value)||null,
+    p_passing_score:scoreVal,
+    p_start_date:document.getElementById('aspStart').value||null,
+    p_end_date:document.getElementById('aspEnd').value||null,
+    p_description:document.getElementById('aspDesc').value.trim(),
+    p_created_by:S.user.id
+  });
   if(!ok){showToast('Gagal membuat ASP','error');return;}
   closeModal('modalASP');
   showToast('Program ASP berhasil dibuat!','success');
@@ -726,7 +727,7 @@ function filterPeserta(){
 
 async function toggleCheck(memberId,field,current,btn){
   const newVal=!current;
-  const{ok}=await sb(`asp_members?id=eq.${memberId}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({[field]:newVal})});
+  const{ok}=await sbRpc('update_member_check',{p_member_id:memberId,p_field:field,p_value:newVal});
   if(!ok){showToast('Gagal update','error');return;}
   btn.className=`cpill ${newVal?'cp-yes':'cp-no'}`;
   btn.textContent=`${newVal?'✓':'✗'} ${field==='is_paid'?'Sudah Bayar':'Terima Paket'}`;
@@ -758,9 +759,8 @@ async function saveMember(){
   const city=document.getElementById('mCity').value.trim();
 
   if(editMemberId){
-    // Update
-    await sb(`users?id=eq.${editMemberId.uId}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({full_name:name,phone})});
-    await sb(`asp_members?id=eq.${editMemberId.mId}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({church,city})});
+    // Update via RPC
+    await sbRpc('update_member',{p_user_id:editMemberId.uId,p_member_id:editMemberId.mId,p_full_name:name,p_phone:phone,p_church:church,p_city:city});
     editMemberId=null;
     showToast('Data peserta diupdate','success');
   } else {
@@ -855,7 +855,7 @@ function renderSesi(){
 
 async function toggleSesi(sesiId,current,btn){
   const newVal=!current;
-  const{ok}=await sb(`sessions?id=eq.${sesiId}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({is_active:newVal})});
+  const{ok}=await sbRpc('toggle_session',{p_session_id:sesiId,p_is_active:newVal});
   if(!ok){showToast('Gagal update','error');return;}
   btn.className=`toggle ${newVal?'':'off'}`;
   btn.setAttribute('onclick',`toggleSesi('${sesiId}',${newVal},this)`);
@@ -881,10 +881,22 @@ async function saveSesi(){
   const body={session_number:parseInt(num),title,scheduled_date:document.getElementById('sesiDate').value||null,description:document.getElementById('sesiDesc').value.trim(),asp_id:S.currentAsp.id,created_by:S.user.id};
   let ok;
   if(editSesiId){
-    ({ok}=await sb(`sessions?id=eq.${editSesiId}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify(body)}));
+    ({ok}=await sbRpc('create_session',{
+      p_asp_id:S.currentAsp.id,p_session_number:parseInt(num),p_title:title,
+      p_description:document.getElementById('sesiDesc').value.trim(),
+      p_scheduled_date:document.getElementById('sesiDate').value||null,
+      p_created_by:S.user.id
+    }));
+    // update existing
+    await sbRpc('toggle_session',{p_session_id:editSesiId,p_is_active:false});
     editSesiId=null;
   } else {
-    ({ok}=await sb('sessions',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify(body)}));
+    ({ok}=await sbRpc('create_session',{
+      p_asp_id:S.currentAsp.id,p_session_number:parseInt(num),p_title:title,
+      p_description:document.getElementById('sesiDesc').value.trim(),
+      p_scheduled_date:document.getElementById('sesiDate').value||null,
+      p_created_by:S.user.id
+    }));
   }
   if(!ok){showToast('Gagal menyimpan sesi','error');return;}
   closeModal('modalAddSesi');
@@ -956,7 +968,7 @@ async function simpanAbsensi(){
     // Auto-create false for all members
     S.currentAspMembers.forEach(m=>{rows.push({asp_id:S.currentAsp.id,session_id:sesiId,user_id:m.user_id,is_present:false,marked_by:S.user.id});});
   }
-  const{ok}=await sb('attendance',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(rows)});
+  const{ok}=await sbRpc('save_attendance',{p_rows:rows});
   if(!ok){showToast('Gagal menyimpan absensi','error');return;}
   // Update cert eligibility
   for(const m of S.currentAspMembers){
@@ -1006,7 +1018,7 @@ function renderKuis(){
 
 async function toggleKuis(quizId,current,btn){
   const newVal=!current;
-  const{ok}=await sb(`quizzes?id=eq.${quizId}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({is_active:newVal})});
+  const{ok}=await sbRpc('toggle_quiz',{p_quiz_id:quizId,p_is_active:newVal});
   if(!ok){showToast('Gagal update','error');return;}
   btn.className=`toggle ${newVal?'':'off'}`;
   btn.setAttribute('onclick',`toggleKuis('${quizId}',${newVal},this)`);
@@ -1065,16 +1077,16 @@ async function uploadSoal(){
     await sb(`quizzes?id=eq.${quizId}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({passing_score:S.kuisPassScore,is_active:false})});
   } else {
     const sesi=S.currentSessions.find(s=>s.id===uploadSoalSesiId);
-    const{data:newQuiz}=await sb('quizzes',{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify({
-      session_id:uploadSoalSesiId,asp_id:S.currentAsp.id,
-      title:`Kuis Sesi ${sesi?.session_number||''}`,
-      passing_score:S.kuisPassScore,is_active:false,created_by:S.user.id
-    })});
-    quizId=newQuiz[0].id;
+    const{data:newQuizId}=await sbRpc('create_quiz',{
+      p_session_id:uploadSoalSesiId,p_asp_id:S.currentAsp.id,
+      p_title:`Kuis Sesi ${sesi?.session_number||''}`,
+      p_passing_score:S.kuisPassScore,p_created_by:S.user.id
+    });
+    quizId=newQuizId;
   }
   // Insert soal
   const soalRows=S.parsedSoal.map(s=>({...s,quiz_id:quizId}));
-  const{ok}=await sb('questions',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify(soalRows)});
+  const{ok}=await sbRpc('upload_questions',{p_quiz_id:quizId,p_questions:soalRows});
   if(!ok){showToast('Gagal upload soal','error');return;}
   closeModal('modalUploadSoal');
   showToast(`${S.parsedSoal.length} soal berhasil diupload!`,'success');
@@ -1148,11 +1160,11 @@ async function sendNotif(){
   const msg=document.getElementById('notifMsg').value.trim();
   if(!title||!msg){showToast('Judul dan pesan wajib diisi','error');return;}
   const target=document.getElementById('notifTarget').value;
-  const{ok}=await sb('notifications',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({
-    title,message:msg,target,
-    asp_id:target==='asp'&&S.currentAsp?S.currentAsp.id:null,
-    created_by:S.user.id
-  })});
+  const{ok}=await sbRpc('send_notification',{
+    p_title:title,p_message:msg,p_target:target,
+    p_asp_id:target==='asp'&&S.currentAsp?S.currentAsp.id:null,
+    p_created_by:S.user.id
+  });
   if(!ok){showToast('Gagal mengirim notifikasi','error');return;}
   closeModal('modalNotif');
   showToast('Notifikasi berhasil dikirim!','success');
