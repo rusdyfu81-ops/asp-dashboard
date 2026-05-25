@@ -650,8 +650,8 @@ async function openASP(aspId){
   document.getElementById('aspDetailSesi').textContent=`${S.currentSessions.length}/6 sesi`;
   document.getElementById('aspDetailPeserta').textContent=`${S.currentAspMembers.length} peserta`;
   document.getElementById('aspDetailScore').textContent=`Avg: ${avg}`;
-  document.getElementById('menuPesertaCount').textContent=`${S.currentAspMembers.length} orang`;
-  document.getElementById('menuSesiCount').textContent=`${S.currentSessions.length} sesi`;
+  document.getElementById('menuPesertaCount').textContent=`${(members||[]).length} orang`;
+  document.getElementById('menuSesiCount').textContent=`${(sessions||[]).length} sesi`;
   showScreen('asp-detail',true,false);
 }
 
@@ -686,13 +686,21 @@ async function createASP(){
 let editMemberId=null;
 
 async function loadPeserta(){
-  const{data:members}=await sb(`asp_members?asp_id=eq.${S.currentAsp.id}&select=*,users(id,username,full_name,phone)&order=users(full_name).asc`);
-  S.currentAspMembers=members||[];
+  const{ok,data}=await sbRpc('get_asp_members',{p_asp_id:S.currentAsp.id});
+  // Map ke format yang konsisten
+  const members=(data||[]).map(m=>({
+    id:m.member_id, user_id:m.user_id,
+    church:m.church, city:m.city,
+    is_paid:m.is_paid, is_package_received:m.is_package_received,
+    users:{id:m.user_id, full_name:m.full_name, phone:m.phone}
+  }));
+  S.currentAspMembers=members;
   renderPeserta(S.currentAspMembers);
 }
 
 function renderPeserta(members){
-  document.getElementById('pesertaCount').textContent=`${members.length} peserta`;
+  const count=members?members.length:0;
+  document.getElementById('pesertaCount').textContent=`${count} peserta`;
   const list=document.getElementById('pesertaList');
   if(!members.length){list.innerHTML=`<div class="empty-state"><i class="ti ti-users-off"></i><p>Belum ada peserta</p></div>`;return;}
   list.innerHTML=members.map(m=>{
@@ -916,8 +924,16 @@ async function loadAbsensi(){
   (existing||[]).forEach(a=>{S.absensiData[a.user_id]=a.is_present;});
 
   // Load members
-  const members=S.currentAspMembers.length?S.currentAspMembers:(await sb(`asp_members?asp_id=eq.${S.currentAsp.id}&select=*,users(id,full_name)`)).data||[];
-
+  let members=S.currentAspMembers;
+  if(!members.length){
+    const{data}=await sbRpc('get_asp_members',{p_asp_id:S.currentAsp.id});
+    members=(data||[]).map(m=>({
+      id:m.member_id,user_id:m.user_id,church:m.church,city:m.city,
+      is_paid:m.is_paid,is_package_received:m.is_package_received,
+      users:{id:m.user_id,full_name:m.full_name,phone:m.phone}
+    }));
+    S.currentAspMembers=members;
+  }
   renderAbsensi(members,sesiId);
   document.getElementById('btnSimpanAbsensi').style.display='flex';
 }
@@ -960,14 +976,11 @@ function toggleAbsen(userId,btn){
 async function simpanAbsensi(){
   const sesiId=document.getElementById('absensiSesiSelect').value;
   if(!sesiId){showToast('Pilih sesi dulu','error');return;}
-  const rows=Object.entries(S.absensiData).map(([userId,isPresent])=>({
-    asp_id:S.currentAsp.id,session_id:sesiId,user_id:userId,
-    is_present:isPresent,marked_by:S.user.id
+  // Build rows: semua member, default false jika belum di-toggle
+  const rows=S.currentAspMembers.map(m=>({
+    asp_id:S.currentAsp.id,session_id:sesiId,user_id:m.user_id,
+    is_present:S.absensiData[m.user_id]===true,marked_by:S.user.id
   }));
-  if(!rows.length){
-    // Auto-create false for all members
-    S.currentAspMembers.forEach(m=>{rows.push({asp_id:S.currentAsp.id,session_id:sesiId,user_id:m.user_id,is_present:false,marked_by:S.user.id});});
-  }
   const{ok}=await sbRpc('save_attendance',{p_rows:rows});
   if(!ok){showToast('Gagal menyimpan absensi','error');return;}
   // Update cert eligibility
