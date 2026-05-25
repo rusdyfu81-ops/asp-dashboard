@@ -687,12 +687,13 @@ let editMemberId=null;
 
 async function loadPeserta(){
   const{ok,data}=await sbRpc('get_asp_members',{p_asp_id:S.currentAsp.id});
-  // Map ke format yang konsisten
-  const members=(data||[]).map(m=>({
+  // RPC returns JSONB — data is the parsed array directly
+  const raw = Array.isArray(data) ? data : (data ? [data] : []);
+  const members = raw.map(m=>({
     id:m.member_id, user_id:m.user_id,
-    church:m.church, city:m.city,
-    is_paid:m.is_paid, is_package_received:m.is_package_received,
-    users:{id:m.user_id, full_name:m.full_name, phone:m.phone}
+    church:m.church||'', city:m.city||'',
+    is_paid:m.is_paid||false, is_package_received:m.is_package_received||false,
+    users:{id:m.user_id, full_name:m.full_name||'-', phone:m.phone||'-'}
   }));
   S.currentAspMembers=members;
   renderPeserta(S.currentAspMembers);
@@ -927,10 +928,11 @@ async function loadAbsensi(){
   let members=S.currentAspMembers;
   if(!members.length){
     const{data}=await sbRpc('get_asp_members',{p_asp_id:S.currentAsp.id});
-    members=(data||[]).map(m=>({
-      id:m.member_id,user_id:m.user_id,church:m.church,city:m.city,
-      is_paid:m.is_paid,is_package_received:m.is_package_received,
-      users:{id:m.user_id,full_name:m.full_name,phone:m.phone}
+    const raw2=Array.isArray(data)?data:(data?[data]:[]);
+    members=raw2.map(m=>({
+      id:m.member_id,user_id:m.user_id,church:m.church||'',city:m.city||'',
+      is_paid:m.is_paid||false,is_package_received:m.is_package_received||false,
+      users:{id:m.user_id,full_name:m.full_name||'-',phone:m.phone||'-'}
     }));
     S.currentAspMembers=members;
   }
