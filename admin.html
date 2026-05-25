@@ -582,7 +582,9 @@ async function sb(path, opts={}) {
     return {ok:res.ok,status:res.status,data};
   } catch(e){return {ok:false,error:e.message};}
 }
-async function sbRpc(fn,body={}){return sb(`rpc/${fn}`,{method:'POST',body:JSON.stringify(body)});}
+async function sbRpc(fn,body={}){
+  return sb(`rpc/${fn}`,{method:'POST',body:JSON.stringify(body)});
+}
 
 // ══════════════════════════════════════════
 // INIT
@@ -1072,28 +1074,44 @@ function previewSoal(input){
 
 async function uploadSoal(){
   if(!S.parsedSoal.length){showToast('Upload file Excel dulu','error');return;}
-  // Cek apakah sudah ada kuis di sesi ini
+
+  // Step 1: Upsert quiz
   const existingQuiz=S.currentQuizzes.find(q=>q.session_id===uploadSoalSesiId);
+  const sesi=S.currentSessions.find(s=>s.id===uploadSoalSesiId);
   let quizId;
-  if(existingQuiz){
-    quizId=existingQuiz.id;
-    await sbRpc('upsert_quiz',{
-      p_session_id:uploadSoalSesiId,p_asp_id:S.currentAsp.id,
-      p_title:existingQuiz.title,
-      p_passing_score:S.kuisPassScore,p_created_by:S.user.id
-    });
-  } else {
-    const sesi=S.currentSessions.find(s=>s.id===uploadSoalSesiId);
-    const{data:newQuizId}=await sbRpc('upsert_quiz',{
-      p_session_id:uploadSoalSesiId,p_asp_id:S.currentAsp.id,
-      p_title:`Kuis Sesi ${sesi?.session_number||''}`,
-      p_passing_score:S.kuisPassScore,p_created_by:S.user.id
-    });
-    quizId=newQuizId;
-  }
-  // Insert soal
-  const soalRows=S.parsedSoal.map(s=>({...s,quiz_id:quizId}));
-  const{ok}=await sbRpc('upload_questions',{p_quiz_id:quizId,p_questions:soalRows});
+
+  const{data:qData,ok:qOk}=await sbRpc('upsert_quiz',{
+    p_session_id:uploadSoalSesiId,
+    p_asp_id:S.currentAsp.id,
+    p_title:`Kuis Sesi ${sesi?.session_number||''}`,
+    p_passing_score:S.kuisPassScore,
+    p_created_by:S.user.id
+  });
+  if(!qOk){showToast('Gagal membuat kuis','error');return;}
+  quizId=qData;
+
+  // Step 2: Insert soal satu per satu langsung ke tabel (bypass RPC JSONB issue)
+  // Hapus soal lama dulu
+  await sb(`questions?quiz_id=eq.${quizId}`,{method:'DELETE'});
+
+  // Insert soal baru satu batch
+  const soalRows=S.parsedSoal.map(s=>({
+    quiz_id:quizId,
+    question_text:String(s.question_text||''),
+    option_a:String(s.option_a||''),
+    option_b:String(s.option_b||''),
+    option_c:String(s.option_c||''),
+    option_d:String(s.option_d||''),
+    correct_answer:String(s.correct_answer||'a').toLowerCase().trim().charAt(0),
+    order_number:parseInt(s.order_number)||1
+  }));
+
+  const{ok}=await sb('questions',{
+    method:'POST',
+    headers:{'Prefer':'return=minimal','Content-Type':'application/json'},
+    body:JSON.stringify(soalRows)
+  });
+
   if(!ok){showToast('Gagal upload soal','error');return;}
   closeModal('modalUploadSoal');
   showToast(`${S.parsedSoal.length} soal berhasil diupload!`,'success');
