@@ -545,30 +545,58 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   btn.classList.add('loading');
 
   try {
-    // Step 1: Verify password via RPC (returns boolean true/false)
+    // Step 1: Verify password via RPC
     const { ok: rpcOk, data: rpcData } = await sbFetch('rpc/verify_password', {
       method: 'POST',
       body: JSON.stringify({ p_username: username, p_password: password })
     });
 
-    // rpcData bisa false (password salah) atau true (benar)
-    if (!rpcOk || rpcData !== true) {
+    if (!rpcOk) {
       showAlert('Username atau password salah.');
       return;
     }
 
-    // Step 2: Query user data (hanya jika password benar)
-    const { ok, data } = await sbFetch(
-      `users?username=eq.${encodeURIComponent(username)}&is_active=eq.true&select=id,username,full_name,role,phone`,
-      { method: 'GET' }
-    );
+    // RPC bisa return: boolean true/false, atau object/array user data
+    // Cek semua kemungkinan
+    let loginOk = false;
+    let user = null;
 
-    if (!ok || !data || data.length === 0) {
-      showAlert('Username tidak ditemukan.');
+    if (rpcData === true) {
+      // Return boolean true — password benar, query user terpisah
+      loginOk = true;
+    } else if (rpcData === false || rpcData === null) {
+      // Return false/null — password salah
+      loginOk = false;
+    } else if (Array.isArray(rpcData) && rpcData.length > 0) {
+      // Return array user data — ambil langsung
+      user = rpcData[0];
+      loginOk = true;
+    } else if (rpcData && typeof rpcData === 'object' && rpcData.id) {
+      // Return single object user data
+      user = rpcData;
+      loginOk = true;
+    } else if (rpcData && typeof rpcData === 'string' && rpcData.startsWith('(')) {
+      // Return postgres tuple string — password benar
+      loginOk = true;
+    }
+
+    if (!loginOk) {
+      showAlert('Username atau password salah.');
       return;
     }
 
-    const user = data[0];
+    // Step 2: Query user data jika belum dapat dari RPC
+    if (!user) {
+      const { ok, data } = await sbFetch(
+        `users?username=eq.${encodeURIComponent(username)}&is_active=eq.true&select=id,username,full_name,role,phone`,
+        { method: 'GET' }
+      );
+      if (!ok || !data || data.length === 0) {
+        showAlert('Username tidak ditemukan.');
+        return;
+      }
+      user = data[0];
+    }
 
     // Update last_login
     await sbFetch(`users?id=eq.${user.id}`, {
