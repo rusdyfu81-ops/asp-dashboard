@@ -1090,26 +1090,24 @@ async function uploadSoal(){
   if(!qOk){showToast('Gagal membuat kuis','error');return;}
   quizId=qData;
 
-  // Step 2: Insert soal satu per satu langsung ke tabel (bypass RPC JSONB issue)
-  // Hapus soal lama dulu
-  await sb(`questions?quiz_id=eq.${quizId}`,{method:'DELETE'});
+  // Step 2: Hapus soal lama
+  await sbRpc('delete_quiz_questions',{p_quiz_id:quizId});
 
-  // Insert soal baru satu batch
-  const soalRows=S.parsedSoal.map(s=>({
-    quiz_id:quizId,
-    question_text:String(s.question_text||''),
-    option_a:String(s.option_a||''),
-    option_b:String(s.option_b||''),
-    option_c:String(s.option_c||''),
-    option_d:String(s.option_d||''),
-    correct_answer:String(s.correct_answer||'a').toLowerCase().trim().charAt(0),
-    order_number:parseInt(s.order_number)||1
-  }));
-
-  const{ok}=await sbRpc('insert_questions',{
-    p_quiz_id:quizId,
-    p_questions:soalRows
-  });
+  // Step 3: Insert soal satu per satu (tanpa JSONB)
+  let ok=true;
+  for(const s of S.parsedSoal){
+    const{ok:qOk}=await sbRpc('insert_one_question',{
+      p_quiz_id:quizId,
+      p_question_text:String(s.question_text||''),
+      p_option_a:String(s.option_a||''),
+      p_option_b:String(s.option_b||''),
+      p_option_c:String(s.option_c||''),
+      p_option_d:String(s.option_d||''),
+      p_correct:String(s.correct_answer||'a').toLowerCase().trim().charAt(0),
+      p_order:parseInt(s.order_number)||1
+    });
+    if(!qOk){ok=false;break;}
+  }
 
   if(!ok){showToast('Gagal upload soal','error');return;}
   closeModal('modalUploadSoal');
