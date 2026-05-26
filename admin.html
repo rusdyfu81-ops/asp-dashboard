@@ -4,905 +4,796 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Admin — Sejarah Penebusan ASP</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --teal:#1DB89A;--teal-dark:#0F8870;--teal-deep:#0A6557;
-  --teal-light:#E1F5EE;--teal-mid:#9FE1CB;
-  --green:#3CB84A;--gray:#4D4D4D;--muted:#888;
-  --border:#EBEBEB;--danger:#E24B4A;--amber:#EF9F27;
-  --amber-light:#FFF3D6;--white:#fff;--bg:#F4F6F8;
-}
-html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);overflow:hidden;}
-
-/* ── LAYOUT ── */
-.app{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;background:var(--bg);position:relative;}
-.topbar{background:linear-gradient(135deg,var(--teal) 0%,var(--teal-dark) 100%);padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 2px 12px rgba(29,184,154,0.2);z-index:10;}
-.topbar-left{display:flex;align-items:center;gap:8px;}
-.tb-back{background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;flex-shrink:0;}
-.tb-info .title{font-size:13px;font-weight:800;color:white;letter-spacing:0.3px;}
-.tb-info .sub{font-size:10px;color:rgba(255,255,255,0.75);margin-top:1px;}
-.tb-right{display:flex;align-items:center;gap:8px;}
-.tb-btn{background:rgba(255,255,255,0.15);border:none;color:white;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;position:relative;}
-.nb{position:absolute;top:-2px;right:-2px;background:var(--danger);color:white;font-size:7px;font-weight:800;border-radius:10px;padding:1px 4px;min-width:14px;text-align:center;border:1.5px solid white;}
-
-.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
-.screen{display:none;min-height:100%;padding-bottom:90px;}
-.screen.active{display:block;animation:fadeIn 0.22s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
-
-.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:white;border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,0.06);}
-.bi{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--muted);cursor:pointer;min-width:54px;padding:4px 0;border:none;background:none;transition:color 0.2s;}
-.bi i{font-size:22px;transition:transform 0.2s;}
-.bi.active{color:var(--teal);}
-.bi.active i{transform:translateY(-2px);}
-
-/* ── COMMON ── */
-.pp{padding:16px;}
-.card{background:white;border-radius:14px;padding:14px;margin-bottom:10px;border:0.5px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.04);}
-.card-teal{background:linear-gradient(135deg,var(--teal),var(--teal-dark));border-radius:14px;padding:14px;margin-bottom:10px;color:white;box-shadow:0 4px 14px rgba(29,184,154,0.25);}
-.sec{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;}
-.stat2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-.stat4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
-.sbox{background:white;border-radius:12px;padding:12px 10px;text-align:center;border:0.5px solid var(--border);}
-.sv{font-size:22px;font-weight:900;color:var(--teal);line-height:1;}
-.sl{font-size:10px;color:var(--muted);margin-top:3px;font-weight:600;}
-.badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px;}
-.b-green{background:#E1F5EE;color:#0F6E56;}
-.b-red{background:#FCE8E8;color:#A32D2D;}
-.b-amber{background:var(--amber-light);color:#854F0B;}
-.b-gray{background:#F0F0F0;color:#777;}
-.btn{border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;display:inline-flex;align-items:center;gap:6px;}
-.btn-primary{background:var(--teal);color:white;}
-.btn-sm{padding:7px 12px;font-size:12px;border-radius:8px;}
-.btn-outline{background:white;color:var(--teal);border:1.5px solid var(--teal);}
-.btn-danger{background:white;color:var(--danger);border:1.5px solid var(--danger);}
-.btn-full{width:100%;justify-content:center;}
-.btn-amber{background:var(--amber);color:white;}
-.row-between{display:flex;align-items:center;justify-content:space-between;}
-.row-gap{display:flex;align-items:center;gap:8px;}
-
-/* ── ASP LIST ── */
-.asp-card{background:white;border-radius:14px;padding:14px;margin-bottom:8px;border:0.5px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.04);cursor:pointer;transition:transform 0.15s;}
-.asp-card:active{transform:scale(0.98);}
-.asp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.dot-active{background:var(--green);}
-.dot-done{background:#CCC;}
-.alert-dot{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--danger);font-weight:700;margin-top:4px;}
-
-/* ── MEMBER LIST ── */
-.member-card{background:white;border-radius:14px;padding:14px;margin-bottom:8px;border:0.5px solid var(--border);}
-.mname{font-size:14px;font-weight:800;color:var(--gray);margin-bottom:3px;}
-.mmeta{font-size:12px;color:var(--muted);margin-bottom:8px;}
-.check-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
-.cpill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px;cursor:pointer;border:none;font-family:'Nunito',sans-serif;}
-.cp-yes{background:#E1F5EE;color:#0F6E56;}
-.cp-no{background:#FCE8E8;color:#A32D2D;}
-.mactions{display:flex;gap:6px;}
-.mact{font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid var(--border);color:var(--muted);background:#FAFAFA;cursor:pointer;font-family:'Nunito',sans-serif;}
-
-/* ── SESI ── */
-.sesi-item{background:white;border-radius:14px;padding:14px;margin-bottom:8px;border:0.5px solid var(--border);}
-.sesi-item.open{border-color:var(--teal);}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
-.toggle{width:44px;height:24px;border-radius:12px;background:var(--teal);position:relative;cursor:pointer;flex-shrink:0;border:none;transition:background 0.2s;}
-.toggle::after{content:'';width:18px;height:18px;background:white;border-radius:50%;position:absolute;right:3px;top:3px;transition:right 0.2s;}
-.toggle.off{background:#DDD;}
-.toggle.off::after{right:auto;left:3px;}
-.toggle-label{font-size:12px;color:var(--muted);}
-
-/* ── ABSENSI ── */
-.absen-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:white;border-radius:12px;margin-bottom:6px;border:0.5px solid var(--border);}
-.aname{flex:1;font-size:13px;font-weight:700;color:var(--gray);}
-.astatus{font-size:11px;font-weight:700;}
-.ah{color:var(--teal);}
-.at{color:var(--danger);}
-
-/* ── KUIS ── */
-.kuis-item{background:white;border-radius:14px;padding:14px;margin-bottom:8px;border:0.5px solid var(--border);}
-.kuis-item.active-kuis{border-color:var(--teal);}
-.result-row{display:flex;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--border);gap:8px;}
-.rname{flex:1;font-size:12px;font-weight:700;color:var(--gray);}
-.rscore{font-size:14px;font-weight:800;color:var(--teal);}
-
-/* ── LEADERBOARD ── */
-.lb-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:white;border-radius:12px;margin-bottom:6px;border:0.5px solid var(--border);}
-.lb-item.g1{background:#FFFBEA;border-color:#EF9F27;}
-.lb-item.g2{background:#F5F5F5;border-color:#B4B2A9;}
-.lb-item.g3{background:#FFF4EE;border-color:#F0997B;}
-.lrank{font-size:16px;font-weight:900;min-width:26px;text-align:center;}
-.linfo{flex:1;}
-.lname{font-size:13px;font-weight:700;color:var(--gray);}
-.lchurch{font-size:11px;color:var(--muted);}
-.lscore{font-size:15px;font-weight:900;color:var(--teal);}
-
-/* ── UPLOAD ZONE ── */
-.upload-zone{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border:2px dashed var(--teal);border-radius:12px;background:var(--teal-light);font-size:13px;color:var(--teal-dark);font-weight:700;cursor:pointer;}
-.upload-zone input{display:none;}
-
-/* ── NOTIF ── */
-.notif-item{background:white;border-radius:12px;padding:12px 14px;margin-bottom:6px;border:0.5px solid var(--border);}
-.notif-title{font-size:13px;font-weight:700;color:var(--gray);}
-.notif-meta{font-size:11px;color:var(--muted);margin-top:3px;}
-
-/* ── FORM ── */
-.field{margin-bottom:14px;}
-.field label{display:block;font-size:12px;font-weight:700;color:var(--gray);margin-bottom:5px;}
-.field input,.field select,.field textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-size:13px;font-family:'Nunito',sans-serif;color:var(--gray);outline:none;background:#FAFAFA;}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--teal);background:white;}
-.field textarea{resize:vertical;min-height:80px;}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-
-/* ── MODAL ── */
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:flex-end;justify-content:center;}
-.modal.show{display:flex;}
-.modal-box{background:white;border-radius:24px 24px 0 0;padding:20px;width:100%;max-width:480px;animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);max-height:90vh;overflow-y:auto;}
-@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
-.modal-title{font-size:16px;font-weight:800;color:var(--gray);margin-bottom:16px;}
-.modal-btns{display:flex;gap:10px;margin-top:16px;}
-.btn-cancel{flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:white;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;font-family:'Nunito',sans-serif;}
-.btn-confirm{flex:2;padding:12px;border-radius:12px;border:none;background:var(--teal);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;}
-
-/* ── SEARCH ── */
-.search-bar{display:flex;gap:8px;margin-bottom:12px;}
-.search-input{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-size:13px;font-family:'Nunito',sans-serif;color:var(--gray);outline:none;background:white;}
-.search-input:focus{border-color:var(--teal);}
-
-/* ── STEPPER ── */
-.stepper{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;}
-.step-btn{width:40px;height:40px;background:#F6F7F8;border:none;font-size:20px;font-weight:700;color:var(--teal);cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.step-val{flex:1;text-align:center;font-size:20px;font-weight:800;color:var(--gray);}
-
-/* ── SKELETON ── */
-.sk{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:10px;}
-@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--gray);color:white;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap;transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);z-index:999;box-shadow:0 4px 16px rgba(0,0,0,0.15);}
-.toast.show{transform:translateX(-50%) translateY(0);}
-.toast.success{background:var(--teal);}
-.toast.error{background:var(--danger);}
-
-.loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:16px;}
-.loading-screen i{font-size:48px;color:var(--teal);animation:pulse 1.5s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
-.empty-state{text-align:center;padding:40px 20px;}
-.empty-state i{font-size:48px;color:var(--teal-mid);margin-bottom:12px;display:block;}
-.empty-state p{font-size:14px;color:var(--muted);font-weight:600;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--teal:#1DB89A;--teal-dark:#0F8870;--green:#3CB84A;--gray:#4D4D4D;--muted:#888;--border:#EBEBEB;--danger:#E24B4A;--amber:#EF9F27;--amber-lt:#FFF3D6;--teal-lt:#E1F5EE;--bg:#F4F6F8;--white:#fff}
+html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);overflow:hidden}
+.app{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;background:var(--bg)}
+/* TOPBAR */
+.tb{background:linear-gradient(135deg,var(--teal),var(--teal-dark));padding:11px 16px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 2px 12px rgba(29,184,154,0.2);z-index:10}
+.tb-l{display:flex;align-items:center;gap:8px}
+.tb-back{background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px}
+.tb-title{font-size:13px;font-weight:800;color:white}
+.tb-sub{font-size:10px;color:rgba(255,255,255,0.75);margin-top:1px}
+.tb-r{display:flex;gap:8px;align-items:center}
+.tb-btn{background:rgba(255,255,255,0.15);border:none;color:white;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px}
+/* CONTENT */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.screen{display:none;min-height:100%;padding-bottom:80px}
+.screen.active{display:block;animation:fi 0.2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+/* BNAV */
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:white;border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,0.06)}
+.bi{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--muted);cursor:pointer;min-width:54px;padding:4px 0;border:none;background:none}
+.bi i{font-size:22px}
+.bi.active{color:var(--teal)}
+/* COMMON */
+.pp{padding:16px}
+.card{background:white;border-radius:14px;padding:14px;margin-bottom:10px;border:0.5px solid var(--border)}
+.card-teal{background:linear-gradient(135deg,var(--teal),var(--teal-dark));border-radius:14px;padding:14px;margin-bottom:10px;color:white}
+.sec{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px}
+.stat2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.sbox{background:white;border-radius:12px;padding:12px;text-align:center;border:0.5px solid var(--border)}
+.sv{font-size:22px;font-weight:900;color:var(--teal);line-height:1}
+.sl{font-size:10px;color:var(--muted);margin-top:3px;font-weight:600}
+.badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px}
+.b-green{background:#E1F5EE;color:#0F6E56}
+.b-red{background:#FCE8E8;color:#A32D2D}
+.b-amber{background:var(--amber-lt);color:#854F0B}
+.b-gray{background:#F0F0F0;color:#777}
+.btn{border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;display:inline-flex;align-items:center;gap:6px}
+.btn-p{background:var(--teal);color:white}
+.btn-sm{padding:7px 12px;font-size:12px;border-radius:8px}
+.btn-full{width:100%;justify-content:center;margin-top:8px}
+.row-btw{display:flex;align-items:center;justify-content:space-between}
+.row-gap{display:flex;align-items:center;gap:8px}
+/* ASP CARD */
+.asp-card{background:white;border-radius:14px;padding:14px;margin-bottom:8px;border:0.5px solid var(--border);cursor:pointer}
+.asp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dot-on{background:var(--green)}
+.dot-off{background:#CCC}
+.alert-dot{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--danger);font-weight:700;margin-top:4px}
+/* MEMBER */
+.mcard{background:white;border-radius:14px;padding:14px;margin-bottom:8px;border:0.5px solid var(--border)}
+.mname{font-size:14px;font-weight:800;color:var(--gray);margin-bottom:2px}
+.mmeta{font-size:12px;color:var(--muted);margin-bottom:8px}
+.chk-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.cpill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px;cursor:pointer;border:none;font-family:'Nunito',sans-serif}
+.cp-y{background:#E1F5EE;color:#0F6E56}
+.cp-n{background:#FCE8E8;color:#A32D2D}
+.macts{display:flex;gap:6px}
+.mact{font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid var(--border);color:var(--muted);background:#FAFAFA;cursor:pointer;font-family:'Nunito',sans-serif}
+/* SESI */
+.sesi-card{background:white;border-radius:14px;padding:14px;margin-bottom:8px;border:0.5px solid var(--border)}
+.sesi-card.open{border-color:var(--teal)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.tgl{width:44px;height:24px;border-radius:12px;background:var(--teal);position:relative;cursor:pointer;border:none;transition:background 0.2s;flex-shrink:0}
+.tgl::after{content:'';width:18px;height:18px;background:white;border-radius:50%;position:absolute;right:3px;top:3px;transition:right 0.2s,left 0.2s}
+.tgl.off{background:#DDD}
+.tgl.off::after{right:auto;left:3px}
+/* ABSENSI */
+.ab-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:white;border-radius:12px;margin-bottom:6px;border:0.5px solid var(--border)}
+.ab-name{flex:1;font-size:13px;font-weight:700;color:var(--gray)}
+.ab-status{font-size:11px;font-weight:700}
+.ah{color:var(--teal)}
+.at{color:var(--danger)}
+/* KUIS */
+.kcard{background:white;border-radius:14px;padding:14px;margin-bottom:8px;border:0.5px solid var(--border)}
+.kcard.active-k{border-color:var(--teal)}
+/* LEADERBOARD */
+.lb-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:white;border-radius:12px;margin-bottom:6px;border:0.5px solid var(--border)}
+.lb-item.g1{background:#FFFBEA;border-color:#EF9F27}
+.lb-item.g2{background:#F5F5F5;border-color:#B4B2A9}
+.lb-item.g3{background:#FFF4EE;border-color:#F0997B}
+.lrank{font-size:16px;font-weight:900;min-width:26px;text-align:center}
+.linfo{flex:1}
+.lname{font-size:13px;font-weight:700;color:var(--gray)}
+.lchurch{font-size:11px;color:var(--muted)}
+.lscore{font-size:15px;font-weight:900;color:var(--teal)}
+/* FORM */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--gray);margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-size:13px;font-family:'Nunito',sans-serif;color:var(--gray);outline:none;background:#FAFAFA}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--teal);background:white}
+.field textarea{resize:vertical;min-height:70px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:flex-end;justify-content:center}
+.modal.show{display:flex}
+.mbox{background:white;border-radius:24px 24px 0 0;padding:20px;width:100%;max-width:480px;animation:su 0.3s cubic-bezier(0.16,1,0.3,1);max-height:90vh;overflow-y:auto}
+@keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.m-title{font-size:16px;font-weight:800;color:var(--gray);margin-bottom:16px}
+.m-btns{display:flex;gap:10px;margin-top:16px}
+.m-cancel{flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:white;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;font-family:'Nunito',sans-serif}
+.m-ok{flex:2;padding:12px;border-radius:12px;border:none;background:var(--teal);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif}
+/* SEARCH */
+.search-bar{display:flex;gap:8px;margin-bottom:12px}
+.search-inp{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-size:13px;font-family:'Nunito',sans-serif;color:var(--gray);outline:none;background:white}
+.search-inp:focus{border-color:var(--teal)}
+/* STEPPER */
+.stepper{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:10px;overflow:hidden}
+.step-btn{width:40px;height:40px;background:#F6F7F8;border:none;font-size:20px;font-weight:700;color:var(--teal);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.step-val{flex:1;text-align:center;font-size:20px;font-weight:800;color:var(--gray)}
+/* UPLOAD ZONE */
+.upzone{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border:2px dashed var(--teal);border-radius:12px;background:var(--teal-lt);font-size:13px;color:var(--teal-dark);font-weight:700;cursor:pointer}
+.upzone input{display:none}
+/* SKELETON */
+.sk{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:sh 1.5s infinite;border-radius:10px;margin-bottom:8px}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--gray);color:white;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap;transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);z-index:999}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{background:var(--teal)}
+.toast.err{background:var(--danger)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;font-weight:600}
+.loading-s{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:16px;color:var(--muted);font-size:14px;font-weight:600}
+.loading-s i{font-size:48px;color:var(--teal);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- LOADING -->
-  <div class="loading-screen" id="loadingScreen">
-    <i class="ti ti-leaf"></i>
-    <div style="font-size:14px;color:var(--muted);font-weight:600;">Memuat panel admin...</div>
+<!-- LOADING -->
+<div class="loading-s" id="loadingS"><i class="ti ti-leaf"></i>Memuat panel admin...</div>
+
+<!-- TOPBAR -->
+<div class="tb" id="tb" style="display:none">
+  <div class="tb-l">
+    <button class="tb-back" id="btnBack" style="display:none" onclick="goBack()"><i class="ti ti-arrow-left"></i></button>
+    <div><div class="tb-title" id="tbTitle">Admin YDSU</div><div class="tb-sub" id="tbSub">Panel Admin</div></div>
+  </div>
+  <div class="tb-r">
+    <button class="tb-btn" onclick="goScreen('notif')"><i class="ti ti-bell"></i></button>
+    <button class="tb-btn" onclick="doLogout()" style="font-size:12px;font-weight:700">Keluar</button>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content" id="content" style="display:none">
+
+  <!-- HOME -->
+  <div class="screen active" id="sc-home">
+    <div class="pp">
+      <div class="card-teal">
+        <div style="font-size:18px;font-weight:900">Halo, Admin 👋</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px">Selamat datang di Panel Admin ASP</div>
+        <div class="stat2" style="margin-top:12px">
+          <div style="background:rgba(255,255,255,0.15);border-radius:10px;padding:10px;text-align:center">
+            <div style="font-size:20px;font-weight:900;color:white" id="st-asp">-</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.75)">ASP Aktif</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.15);border-radius:10px;padding:10px;text-align:center">
+            <div style="font-size:20px;font-weight:900;color:white" id="st-p">-</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.75)">Total Peserta</div>
+          </div>
+        </div>
+      </div>
+      <div class="row-btw" style="margin-bottom:10px">
+        <div class="sec" style="margin:0">Program ASP</div>
+        <button class="btn btn-p btn-sm" onclick="openModal('m-asp')"><i class="ti ti-plus"></i>Buat ASP</button>
+      </div>
+      <div id="asp-list"><div class="sk" style="height:80px"></div><div class="sk" style="height:80px"></div></div>
+    </div>
   </div>
 
-  <!-- TOPBAR -->
-  <div class="topbar" id="topbar" style="display:none;">
-    <div class="topbar-left">
-      <button class="tb-back" id="btnBack" style="display:none;" onclick="goBack()"><i class="ti ti-arrow-left"></i></button>
-      <div>
-        <div class="tb-info">
-          <div class="title" id="tbTitle">Admin YDSU</div>
-          <div class="sub" id="tbSub">Panel Admin</div>
+  <!-- ASP DETAIL -->
+  <div class="screen" id="sc-asp">
+    <div class="pp">
+      <div class="card-teal" id="asp-detail-card">
+        <div style="font-size:16px;font-weight:900" id="asp-d-name">-</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px" id="asp-d-org">-</div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 12px;font-size:11px;color:white" id="asp-d-sesi">-</div>
+          <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 12px;font-size:11px;color:white" id="asp-d-peserta">-</div>
         </div>
       </div>
-    </div>
-    <div class="tb-right">
-      <button class="tb-btn" onclick="showScreen('notif')"><i class="ti ti-bell"></i><div class="nb" id="notifBadge" style="display:none;">0</div></button>
-      <button class="tb-btn" onclick="logout()" style="font-size:13px;font-weight:700;">Keluar</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="card" style="cursor:pointer;text-align:center;padding:16px" onclick="goMenu('peserta')">
+          <i class="ti ti-users" style="font-size:28px;color:var(--teal)"></i>
+          <div style="font-size:13px;font-weight:700;margin-top:6px">Peserta</div>
+          <div style="font-size:11px;color:var(--muted)" id="m-p-count">-</div>
+        </div>
+        <div class="card" style="cursor:pointer;text-align:center;padding:16px" onclick="goMenu('sesi')">
+          <i class="ti ti-calendar" style="font-size:28px;color:var(--teal)"></i>
+          <div style="font-size:13px;font-weight:700;margin-top:6px">Sesi</div>
+          <div style="font-size:11px;color:var(--muted)" id="m-s-count">-</div>
+        </div>
+        <div class="card" style="cursor:pointer;text-align:center;padding:16px" onclick="goMenu('absensi')">
+          <i class="ti ti-clipboard-check" style="font-size:28px;color:var(--teal)"></i>
+          <div style="font-size:13px;font-weight:700;margin-top:6px">Absensi</div>
+          <div style="font-size:11px;color:var(--muted)">Input kehadiran</div>
+        </div>
+        <div class="card" style="cursor:pointer;text-align:center;padding:16px" onclick="goMenu('kuis')">
+          <i class="ti ti-pencil" style="font-size:28px;color:var(--teal)"></i>
+          <div style="font-size:13px;font-weight:700;margin-top:6px">Kuis</div>
+          <div style="font-size:11px;color:var(--muted)">Upload & kelola</div>
+        </div>
+        <div class="card" style="cursor:pointer;text-align:center;padding:16px" onclick="goMenu('lb')">
+          <i class="ti ti-trophy" style="font-size:28px;color:var(--amber)"></i>
+          <div style="font-size:13px;font-weight:700;margin-top:6px">Leaderboard</div>
+          <div style="font-size:11px;color:var(--muted)">Ranking peserta</div>
+        </div>
+        <div class="card" style="cursor:pointer;text-align:center;padding:16px" onclick="goMenu('export')">
+          <i class="ti ti-download" style="font-size:28px;color:var(--green)"></i>
+          <div style="font-size:13px;font-weight:700;margin-top:6px">Export</div>
+          <div style="font-size:11px;color:var(--muted)">Download data</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- CONTENT -->
-  <div class="content" id="content" style="display:none;">
-
-    <!-- ══ HOME ══ -->
-    <div class="screen active" id="screen-home">
-      <div class="pp">
-        <div class="card-teal">
-          <div style="font-size:18px;font-weight:900;">Halo, Admin 👋</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px;">Selamat datang di Panel Admin ASP</div>
-          <div id="homeStats" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
-            <div style="background:rgba(255,255,255,0.15);border-radius:10px;padding:10px;text-align:center;">
-              <div style="font-size:20px;font-weight:900;color:white;" id="statASP">-</div>
-              <div style="font-size:10px;color:rgba(255,255,255,0.75);">ASP Aktif</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.15);border-radius:10px;padding:10px;text-align:center;">
-              <div style="font-size:20px;font-weight:900;color:white;" id="statPeserta">-</div>
-              <div style="font-size:10px;color:rgba(255,255,255,0.75);">Total Peserta</div>
-            </div>
-          </div>
-        </div>
-        <div class="row-between" style="margin-bottom:10px;">
-          <div class="sec" style="margin:0;">Program ASP</div>
-          <button class="btn btn-primary btn-sm" onclick="showModal('modalASP')"><i class="ti ti-plus"></i>Buat ASP</button>
-        </div>
-        <div id="aspList"><div class="sk" style="height:80px;margin-bottom:8px;"></div><div class="sk" style="height:80px;"></div></div>
+  <!-- PESERTA -->
+  <div class="screen" id="sc-peserta">
+    <div class="pp">
+      <div class="search-bar">
+        <input class="search-inp" placeholder="🔍 Cari nama..." id="srch-p" oninput="filterPeserta()">
+        <button class="btn btn-p btn-sm" onclick="openModal('m-member')"><i class="ti ti-plus"></i>Tambah</button>
       </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px" id="p-count">-</div>
+      <div id="peserta-list"></div>
     </div>
+  </div>
 
-    <!-- ══ DETAIL ASP ══ -->
-    <div class="screen" id="screen-asp-detail">
-      <div class="pp">
-        <div class="card-teal" id="aspDetailCard">
-          <div style="font-size:16px;font-weight:900;" id="aspDetailName">-</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px;" id="aspDetailOrg">-</div>
-          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-            <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 12px;font-size:11px;color:white;" id="aspDetailSesi">- sesi</div>
-            <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 12px;font-size:11px;color:white;" id="aspDetailPeserta">- peserta</div>
-            <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 12px;font-size:11px;color:white;" id="aspDetailScore">Avg: -</div>
-          </div>
-        </div>
-        <!-- MENU AKSI -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          <div class="card" style="cursor:pointer;text-align:center;padding:16px;" onclick="showScreen('peserta')">
-            <i class="ti ti-users" style="font-size:28px;color:var(--teal);"></i>
-            <div style="font-size:13px;font-weight:700;margin-top:6px;">Peserta</div>
-            <div style="font-size:11px;color:var(--muted);" id="menuPesertaCount">- orang</div>
-          </div>
-          <div class="card" style="cursor:pointer;text-align:center;padding:16px;" onclick="showScreen('sesi')">
-            <i class="ti ti-calendar" style="font-size:28px;color:var(--teal);"></i>
-            <div style="font-size:13px;font-weight:700;margin-top:6px;">Sesi</div>
-            <div style="font-size:11px;color:var(--muted);" id="menuSesiCount">- sesi</div>
-          </div>
-          <div class="card" style="cursor:pointer;text-align:center;padding:16px;" onclick="showScreen('absensi')">
-            <i class="ti ti-clipboard-check" style="font-size:28px;color:var(--teal);"></i>
-            <div style="font-size:13px;font-weight:700;margin-top:6px;">Absensi</div>
-            <div style="font-size:11px;color:var(--muted);">Input kehadiran</div>
-          </div>
-          <div class="card" style="cursor:pointer;text-align:center;padding:16px;" onclick="showScreen('kuis')">
-            <i class="ti ti-pencil" style="font-size:28px;color:var(--teal);"></i>
-            <div style="font-size:13px;font-weight:700;margin-top:6px;">Kuis</div>
-            <div style="font-size:11px;color:var(--muted);">Upload & kelola</div>
-          </div>
-          <div class="card" style="cursor:pointer;text-align:center;padding:16px;" onclick="showScreen('leaderboard')">
-            <i class="ti ti-trophy" style="font-size:28px;color:var(--amber);"></i>
-            <div style="font-size:13px;font-weight:700;margin-top:6px;">Leaderboard</div>
-            <div style="font-size:11px;color:var(--muted);">Ranking peserta</div>
-          </div>
-          <div class="card" style="cursor:pointer;text-align:center;padding:16px;" onclick="showScreen('export')">
-            <i class="ti ti-download" style="font-size:28px;color:var(--green);"></i>
-            <div style="font-size:13px;font-weight:700;margin-top:6px;">Export</div>
-            <div style="font-size:11px;color:var(--muted);">Download data</div>
-          </div>
+  <!-- SESI -->
+  <div class="screen" id="sc-sesi">
+    <div class="pp">
+      <div class="row-btw" style="margin-bottom:12px">
+        <div class="sec" style="margin:0">6 Sesi Program</div>
+        <button class="btn btn-p btn-sm" onclick="openModal('m-sesi')"><i class="ti ti-plus"></i>Tambah</button>
+      </div>
+      <div id="sesi-list"></div>
+    </div>
+  </div>
+
+  <!-- ABSENSI -->
+  <div class="screen" id="sc-absensi">
+    <div class="pp">
+      <div class="field" style="margin-bottom:12px">
+        <label>Pilih Sesi</label>
+        <select id="ab-sesi-sel" onchange="loadAbsensi()">
+          <option value="">-- Pilih Sesi --</option>
+        </select>
+      </div>
+      <div id="ab-stats" style="display:none" class="card">
+        <div style="display:flex;text-align:center">
+          <div style="flex:1"><div class="sv" id="ab-h">0</div><div class="sl">Hadir</div></div>
+          <div style="width:1px;background:var(--border);margin:0 8px"></div>
+          <div style="flex:1"><div class="sv" style="color:var(--danger)" id="ab-t">0</div><div class="sl">Tidak</div></div>
+          <div style="width:1px;background:var(--border);margin:0 8px"></div>
+          <div style="flex:1"><div class="sv" style="color:var(--gray)" id="ab-tot">0</div><div class="sl">Total</div></div>
         </div>
       </div>
+      <div id="ab-list"></div>
+      <button class="btn btn-p btn-full" id="btn-ab" style="display:none" onclick="simpanAbsensi()"><i class="ti ti-device-floppy"></i>Simpan Absensi</button>
     </div>
+  </div>
 
-    <!-- ══ PESERTA ══ -->
-    <div class="screen" id="screen-peserta">
-      <div class="pp">
-        <div class="search-bar">
-          <input class="search-input" placeholder="🔍 Cari nama atau gereja..." id="searchPeserta" oninput="filterPeserta()">
-          <button class="btn btn-primary btn-sm" onclick="showModal('modalAddMember')"><i class="ti ti-plus"></i>Tambah</button>
-        </div>
-        <div style="display:flex;gap:6px;margin-bottom:12px;">
-          <button class="btn btn-sm btn-outline" onclick="importExcelPeserta()"><i class="ti ti-file-spreadsheet"></i>Import Excel</button>
-          <div style="flex:1;"></div>
-          <div style="font-size:12px;color:var(--muted);align-self:center;" id="pesertaCount">- peserta</div>
-        </div>
-        <div id="pesertaList"><div class="sk" style="height:100px;margin-bottom:8px;"></div><div class="sk" style="height:100px;"></div></div>
+  <!-- KUIS -->
+  <div class="screen" id="sc-kuis">
+    <div class="pp">
+      <div class="sec">Manajemen Kuis</div>
+      <div id="kuis-list"></div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="screen" id="sc-lb">
+    <div class="pp">
+      <div class="sec">🏆 Leaderboard</div>
+      <div id="lb-list"></div>
+    </div>
+  </div>
+
+  <!-- NOTIF -->
+  <div class="screen" id="sc-notif">
+    <div class="pp">
+      <div class="row-btw" style="margin-bottom:12px">
+        <div class="sec" style="margin:0">Notifikasi</div>
+        <button class="btn btn-p btn-sm" onclick="openModal('m-notif')"><i class="ti ti-send"></i>Kirim</button>
       </div>
+      <div id="notif-list"></div>
     </div>
+  </div>
 
-    <!-- ══ SESI ══ -->
-    <div class="screen" id="screen-sesi">
-      <div class="pp">
-        <div class="row-between" style="margin-bottom:12px;">
-          <div class="sec" style="margin:0;">6 Sesi Program</div>
-          <button class="btn btn-primary btn-sm" onclick="showModal('modalAddSesi')"><i class="ti ti-plus"></i>Tambah</button>
+  <!-- EXPORT -->
+  <div class="screen" id="sc-export">
+    <div class="pp">
+      <div class="sec">Export Data</div>
+      <div class="card">
+        <div class="field">
+          <label>Sesi</label>
+          <select id="exp-sesi"><option value="all">Semua Sesi</option></select>
         </div>
-        <div id="sesiList"><div class="sk" style="height:100px;margin-bottom:8px;"></div><div class="sk" style="height:100px;"></div></div>
-      </div>
-    </div>
-
-    <!-- ══ ABSENSI ══ -->
-    <div class="screen" id="screen-absensi">
-      <div class="pp">
-        <div class="field" style="margin-bottom:12px;">
-          <label>Pilih Sesi</label>
-          <select id="absensiSesiSelect" onchange="loadAbsensi()">
-            <option value="">-- Pilih Sesi --</option>
-          </select>
-        </div>
-        <div id="absensiStats" style="display:none;" class="card">
-          <div style="display:flex;text-align:center;">
-            <div style="flex:1;"><div class="sv" id="abHadir">0</div><div class="sl">Hadir</div></div>
-            <div style="width:1px;background:var(--border);margin:0 8px;"></div>
-            <div style="flex:1;"><div class="sv" style="color:var(--danger);" id="abTidak">0</div><div class="sl">Tidak</div></div>
-            <div style="width:1px;background:var(--border);margin:0 8px;"></div>
-            <div style="flex:1;"><div class="sv" style="color:var(--gray);" id="abTotal">0</div><div class="sl">Total</div></div>
+        <div class="field" style="margin-bottom:0">
+          <label>Pilih Data</label>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px">
+            <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px"><input type="checkbox" id="exp-p" checked> Data Peserta</label>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px"><input type="checkbox" id="exp-a" checked> Rekap Absensi</label>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px"><input type="checkbox" id="exp-n" checked> Nilai Kuis</label>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px"><input type="checkbox" id="exp-l" checked> Leaderboard</label>
           </div>
         </div>
-        <div id="absensiList"></div>
-        <button class="btn btn-primary btn-full" id="btnSimpanAbsensi" style="display:none;" onclick="simpanAbsensi()"><i class="ti ti-device-floppy"></i>Simpan Absensi</button>
       </div>
+      <button class="btn btn-p btn-full" onclick="doExport()"><i class="ti ti-download"></i>Download Excel</button>
     </div>
+  </div>
 
-    <!-- ══ KUIS ══ -->
-    <div class="screen" id="screen-kuis">
-      <div class="pp">
-        <div class="sec">Manajemen Kuis</div>
-        <div id="kuisList"><div class="sk" style="height:120px;margin-bottom:8px;"></div></div>
-      </div>
-    </div>
+</div><!-- end content -->
 
-    <!-- ══ HASIL KUIS ══ -->
-    <div class="screen" id="screen-hasil-kuis">
-      <div class="pp">
-        <div class="sec" id="hasilKuisTitle">Hasil Kuis</div>
-        <div class="card">
-          <div style="display:flex;text-align:center;">
-            <div style="flex:1;"><div class="sv" id="hkAvg">-</div><div class="sl">Rata-rata</div></div>
-            <div style="width:1px;background:var(--border);margin:0 8px;"></div>
-            <div style="flex:1;"><div class="sv" id="hkSubmit">-</div><div class="sl">Submit</div></div>
-            <div style="width:1px;background:var(--border);margin:0 8px;"></div>
-            <div style="flex:1;"><div class="sv" id="hkLulus">-</div><div class="sl">Lulus</div></div>
-          </div>
-        </div>
-        <div id="hasilKuisList"></div>
-      </div>
-    </div>
-
-    <!-- ══ LEADERBOARD ══ -->
-    <div class="screen" id="screen-leaderboard">
-      <div class="pp">
-        <div class="sec">🏆 Leaderboard</div>
-        <div id="lbList"><div class="sk" style="height:60px;margin-bottom:6px;"></div><div class="sk" style="height:60px;margin-bottom:6px;"></div><div class="sk" style="height:60px;"></div></div>
-      </div>
-    </div>
-
-    <!-- ══ NOTIFIKASI ══ -->
-    <div class="screen" id="screen-notif">
-      <div class="pp">
-        <div class="row-between" style="margin-bottom:12px;">
-          <div class="sec" style="margin:0;">Notifikasi</div>
-          <button class="btn btn-primary btn-sm" onclick="showModal('modalNotif')"><i class="ti ti-send"></i>Kirim</button>
-        </div>
-        <div id="notifList"></div>
-      </div>
-    </div>
-
-    <!-- ══ EXPORT ══ -->
-    <div class="screen" id="screen-export">
-      <div class="pp">
-        <div class="sec">Export Data</div>
-        <div class="card">
-          <div class="field">
-            <label>Sesi</label>
-            <select id="exportSesi">
-              <option value="all">Semua Sesi</option>
-            </select>
-          </div>
-          <div class="field" style="margin-bottom:0;">
-            <label>Pilih Data</label>
-            <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
-              <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;"><input type="checkbox" id="expPeserta" checked> Data Peserta</label>
-              <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;"><input type="checkbox" id="expAbsensi" checked> Rekap Absensi</label>
-              <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;"><input type="checkbox" id="expNilai" checked> Nilai Kuis</label>
-              <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;"><input type="checkbox" id="expLB" checked> Leaderboard</label>
-            </div>
-          </div>
-        </div>
-        <button class="btn btn-primary btn-full" onclick="exportData()"><i class="ti ti-download"></i>Download Excel</button>
-        <div style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center;">File Excel akan terdownload otomatis</div>
-      </div>
-    </div>
-
-  </div><!-- end content -->
-
-  <!-- BOTTOM NAV -->
-  <nav class="bnav" id="bnav" style="display:none;">
-    <button class="bi active" data-screen="home" onclick="showScreen('home')"><i class="ti ti-home"></i>Home</button>
-    <button class="bi" data-screen="notif" onclick="showScreen('notif')"><i class="ti ti-bell"></i>Notif</button>
-    <button class="bi" onclick="logout()"><i class="ti ti-logout"></i>Keluar</button>
-  </nav>
-
+<!-- BNAV -->
+<nav class="bnav" id="bnav" style="display:none">
+  <button class="bi active" data-sc="home" onclick="goScreen('home')"><i class="ti ti-home"></i>Home</button>
+  <button class="bi" data-sc="notif" onclick="goScreen('notif')"><i class="ti ti-bell"></i>Notif</button>
+  <button class="bi" onclick="doLogout()"><i class="ti ti-logout"></i>Keluar</button>
+</nav>
 </div><!-- end app -->
 
-<!-- ══ MODAL: BUAT ASP ══ -->
-<div class="modal" id="modalASP">
-  <div class="modal-box">
-    <div class="modal-title">Program ASP Baru</div>
-    <div class="field"><label>Nama Program *</label><input id="aspName" placeholder="Contoh: PGLII Depok — Seri 2"></div>
+<!-- MODAL: BUAT ASP -->
+<div class="modal" id="m-asp">
+  <div class="mbox">
+    <div class="m-title">Program ASP Baru</div>
+    <div class="field"><label>Nama Program *</label><input id="asp-name" placeholder="PGLII Depok — Seri 2"></div>
     <div class="field-row">
-      <div class="field"><label>Penyelenggara</label><input id="aspOrg" placeholder="PGLII, GBI, dll"></div>
-      <div class="field"><label>Kota</label><input id="aspCity" placeholder="Depok"></div>
+      <div class="field"><label>Penyelenggara</label><input id="asp-org" placeholder="PGLII"></div>
+      <div class="field"><label>Kota</label><input id="asp-city" placeholder="Depok"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Seri ke-</label><input id="aspSeries" type="number" placeholder="1" min="1"></div>
+      <div class="field"><label>Seri ke-</label><input id="asp-series" type="number" placeholder="1" min="1"></div>
       <div class="field"><label>Skor Lulus (%)</label>
-        <div class="stepper" style="margin-top:2px;">
+        <div class="stepper" style="margin-top:2px">
           <button class="step-btn" onclick="adjScore(-5)">−</button>
-          <div class="step-val" id="scoreVal">70</div>
+          <div class="step-val" id="score-val">70</div>
           <button class="step-btn" onclick="adjScore(5)">+</button>
         </div>
       </div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Tanggal Mulai</label><input id="aspStart" type="date"></div>
-      <div class="field"><label>Tanggal Selesai</label><input id="aspEnd" type="date"></div>
+      <div class="field"><label>Tanggal Mulai</label><input id="asp-start" type="date"></div>
+      <div class="field"><label>Tanggal Selesai</label><input id="asp-end" type="date"></div>
     </div>
-    <div class="field"><label>Deskripsi</label><textarea id="aspDesc" placeholder="Keterangan program..."></textarea></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal('modalASP')">Batal</button>
-      <button class="btn-confirm" onclick="createASP()">Buat Program</button>
+    <div class="field"><label>Deskripsi</label><textarea id="asp-desc" placeholder="Keterangan..."></textarea></div>
+    <div class="m-btns">
+      <button class="m-cancel" onclick="closeModal('m-asp')">Batal</button>
+      <button class="m-ok" onclick="createASP()">Buat Program</button>
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL: TAMBAH PESERTA ══ -->
-<div class="modal" id="modalAddMember">
-  <div class="modal-box">
-    <div class="modal-title" id="modalMemberTitle">Tambah Peserta</div>
-    <div class="field"><label>Nama Lengkap *</label><input id="mFullName" placeholder="Nama lengkap peserta"></div>
+<!-- MODAL: TAMBAH PESERTA -->
+<div class="modal" id="m-member">
+  <div class="mbox">
+    <div class="m-title" id="m-member-title">Tambah Peserta</div>
+    <div class="field"><label>Nama Lengkap *</label><input id="m-name" placeholder="Nama lengkap"></div>
     <div class="field-row">
-      <div class="field"><label>No. Kontak</label><input id="mPhone" placeholder="0812-xxxx-xxxx" type="tel"></div>
-      <div class="field"><label>Kota</label><input id="mCity" placeholder="Jakarta"></div>
+      <div class="field"><label>No. Kontak</label><input id="m-phone" placeholder="0812-xxxx" type="tel"></div>
+      <div class="field"><label>Kota</label><input id="m-city" placeholder="Jakarta"></div>
     </div>
-    <div class="field"><label>Asal Gereja *</label><input id="mChurch" placeholder="GBI Maranatha"></div>
-    <div class="field"><label>Username *</label><input id="mUsername" placeholder="nama.peserta" autocomplete="new-password"></div>
-    <div class="field"><label>Password *</label>
-      <input id="mPassword" placeholder="Min. 8 karakter" type="password" autocomplete="new-password">
-      <div style="font-size:11px;color:var(--muted);margin-top:4px;">Peserta bisa ganti password setelah login</div>
+    <div class="field"><label>Asal Gereja *</label><input id="m-church" placeholder="GBI Maranatha"></div>
+    <div id="m-member-cred">
+      <div class="field"><label>Username *</label><input id="m-username" placeholder="nama.peserta" autocomplete="new-password"></div>
+      <div class="field"><label>Password *</label><input id="m-password" placeholder="Min. 8 karakter" type="password" autocomplete="new-password"></div>
     </div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal('modalAddMember')">Batal</button>
-      <button class="btn-confirm" id="btnSaveMember" onclick="saveMember()">Simpan</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ MODAL: RESET PASSWORD ══ -->
-<div class="modal" id="modalResetPW">
-  <div class="modal-box">
-    <div class="modal-title">Reset Password</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:14px;">Reset password untuk: <strong id="resetPwName">-</strong></div>
-    <div class="field"><label>Password Baru *</label><input id="resetPwVal" placeholder="Min. 8 karakter" type="password" autocomplete="new-password"></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal('modalResetPW')">Batal</button>
-      <button class="btn-confirm" onclick="doResetPW()">Reset Password</button>
+    <div class="m-btns">
+      <button class="m-cancel" onclick="closeModal('m-member')">Batal</button>
+      <button class="m-ok" onclick="saveMember()">Simpan</button>
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL: TAMBAH SESI ══ -->
-<div class="modal" id="modalAddSesi">
-  <div class="modal-box">
-    <div class="modal-title" id="modalSesiTitle">Tambah Sesi</div>
+<!-- MODAL: RESET PW -->
+<div class="modal" id="m-resetpw">
+  <div class="mbox">
+    <div class="m-title">Reset Password</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Reset untuk: <strong id="rpw-name">-</strong></div>
+    <div class="field"><label>Password Baru *</label><input id="rpw-val" placeholder="Min. 8 karakter" type="password"></div>
+    <div class="m-btns">
+      <button class="m-cancel" onclick="closeModal('m-resetpw')">Batal</button>
+      <button class="m-ok" onclick="doResetPW()">Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TAMBAH SESI -->
+<div class="modal" id="m-sesi">
+  <div class="mbox">
+    <div class="m-title" id="m-sesi-title">Tambah Sesi</div>
     <div class="field-row">
       <div class="field"><label>Sesi ke- *</label>
-        <select id="sesiNum">
+        <select id="s-num">
           <option value="1">Sesi 1</option><option value="2">Sesi 2</option>
           <option value="3">Sesi 3</option><option value="4">Sesi 4</option>
           <option value="5">Sesi 5</option><option value="6">Sesi 6</option>
         </select>
       </div>
-      <div class="field"><label>Tanggal</label><input id="sesiDate" type="date"></div>
+      <div class="field"><label>Tanggal</label><input id="s-date" type="date"></div>
     </div>
-    <div class="field"><label>Judul Sesi *</label><input id="sesiTitle" placeholder="Dasar Iman, Doa & Firman, dll"></div>
-    <div class="field"><label>Deskripsi</label><textarea id="sesiDesc" placeholder="Topik yang akan dibahas..."></textarea></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal('modalAddSesi')">Batal</button>
-      <button class="btn-confirm" onclick="saveSesi()">Simpan</button>
+    <div class="field"><label>Judul *</label><input id="s-title" placeholder="Dasar Iman"></div>
+    <div class="field"><label>Deskripsi</label><textarea id="s-desc" placeholder="Topik yang dibahas..."></textarea></div>
+    <div class="m-btns">
+      <button class="m-cancel" onclick="closeModal('m-sesi')">Batal</button>
+      <button class="m-ok" onclick="saveSesi()">Simpan</button>
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL: UPLOAD SOAL ══ -->
-<div class="modal" id="modalUploadSoal">
-  <div class="modal-box">
-    <div class="modal-title" id="uploadSoalTitle">Upload Soal Kuis</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Format Excel: Kolom A=Pertanyaan, B=Opsi A, C=Opsi B, D=Opsi C, E=Opsi D, F=Jawaban (a/b/c/d)</div>
-    <label class="upload-zone">
-      <input type="file" accept=".xlsx,.xls,.csv" id="soalFile" onchange="previewSoal(this)">
-      <i class="ti ti-file-spreadsheet" style="font-size:20px;"></i>
-      Pilih File Excel
+<!-- MODAL: UPLOAD SOAL -->
+<div class="modal" id="m-soal">
+  <div class="mbox">
+    <div class="m-title" id="m-soal-title">Upload Soal Kuis</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Kolom Excel: A=Pertanyaan, B=Opsi A, C=Opsi B, D=Opsi C, E=Opsi D, F=Jawaban (a/b/c/d)</div>
+    <label class="upzone">
+      <input type="file" accept=".xlsx,.xls" id="soal-file" onchange="previewSoal(this)">
+      <i class="ti ti-file-spreadsheet" style="font-size:20px"></i>Pilih File Excel
     </label>
-    <div id="soalPreview" style="margin-top:12px;display:none;">
-      <div class="sec" style="margin-bottom:8px;">Preview Soal</div>
-      <div id="soalPreviewList"></div>
-    </div>
-    <div class="field" style="margin-top:12px;">
-      <label>Skor Lulus Minimal (override ASP)</label>
+    <div id="soal-preview" style="display:none;margin-top:12px"></div>
+    <div class="field" style="margin-top:12px">
+      <label>Skor Lulus Minimal</label>
       <div class="stepper">
-        <button class="step-btn" onclick="adjKuisScore(-5)">−</button>
-        <div class="step-val" id="kuisScoreVal">70</div>
-        <button class="step-btn" onclick="adjKuisScore(5)">+</button>
+        <button class="step-btn" onclick="adjKScore(-5)">−</button>
+        <div class="step-val" id="k-score-val">70</div>
+        <button class="step-btn" onclick="adjKScore(5)">+</button>
       </div>
     </div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal('modalUploadSoal')">Batal</button>
-      <button class="btn-confirm" id="btnUploadSoal" onclick="uploadSoal()">Simpan & Aktifkan</button>
+    <div class="m-btns">
+      <button class="m-cancel" onclick="closeModal('m-soal')">Batal</button>
+      <button class="m-ok" id="btn-upload-soal" onclick="uploadSoal()">Simpan & Aktifkan</button>
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL: NOTIFIKASI ══ -->
-<div class="modal" id="modalNotif">
-  <div class="modal-box">
-    <div class="modal-title">Kirim Notifikasi</div>
-    <div class="field"><label>Judul *</label><input id="notifTitle" placeholder="Judul notifikasi"></div>
-    <div class="field"><label>Pesan *</label><textarea id="notifMsg" placeholder="Isi pesan notifikasi..."></textarea></div>
+<!-- MODAL: NOTIF -->
+<div class="modal" id="m-notif">
+  <div class="mbox">
+    <div class="m-title">Kirim Notifikasi</div>
+    <div class="field"><label>Judul *</label><input id="notif-title" placeholder="Judul notifikasi"></div>
+    <div class="field"><label>Pesan *</label><textarea id="notif-msg" placeholder="Isi pesan..."></textarea></div>
     <div class="field"><label>Target</label>
-      <select id="notifTarget">
+      <select id="notif-target">
         <option value="all">Semua Peserta</option>
         <option value="asp">ASP Ini Saja</option>
       </select>
     </div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal('modalNotif')">Batal</button>
-      <button class="btn-confirm" onclick="sendNotif()">Kirim</button>
+    <div class="m-btns">
+      <button class="m-cancel" onclick="closeModal('m-notif')">Batal</button>
+      <button class="m-ok" onclick="sendNotif()">Kirim</button>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 // ══════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════
-const SUPABASE_URL  = 'https://zpewvsezyhsjqemwuoag.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwZXd2c2V6eWhzanFlbXd1b2FnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjU4MDYsImV4cCI6MjA5NTMwMTgwNn0.78C0QBfWOnink16LfiFjRY2aXcX9Nsj0IrPT57yagfo';
+const SB_URL = 'SUPABASE_URL_HERE';
+const SB_KEY = 'SUPABASE_ANON_KEY_HERE';
+
+// ══════════════════════════════════════════
+// API HELPERS
+// ══════════════════════════════════════════
+const H = {'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json','Accept':'application/json'};
+
+// GET dari REST API
+async function GET(path) {
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/${path}`, {headers:H});
+    return {ok:r.ok, data: r.status===204?null:await r.json()};
+  } catch(e) { return {ok:false,data:null}; }
+}
+
+// RPC — semua parameter sudah TEXT di SQL
+async function RPC(fn, body) {
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, {method:'POST',headers:H,body:JSON.stringify(body)});
+    const d = r.status===204?null:await r.json();
+    return {ok:r.ok, data:d};
+  } catch(e) { return {ok:false,data:null}; }
+}
 
 // ══════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════
 let S = {
-  user: null, asps: [],
-  currentAsp: null, currentAspMembers: [],
-  currentSessions: [], currentQuizzes: [],
-  absensiData: {}, currentQuizId: null,
-  parsedSoal: [], kuisPassScore: 70,
-  screenHistory: []
+  user:null, asps:[], asp:null,
+  members:[], sessions:[], quizzes:[],
+  absensiState:{}, uploadSesiId:null,
+  kScore:70, aspScore:70,
+  editMember:null, editSesi:null, resetUserId:null,
+  parsedSoal:[]
 };
-let scoreVal = 70;
-
-// ══════════════════════════════════════════
-// SUPABASE
-// ══════════════════════════════════════════
-async function sb(path, opts={}) {
-  const token = localStorage.getItem('asp_token') || SUPABASE_ANON;
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-      headers:{'apikey':SUPABASE_ANON,'Authorization':`Bearer ${token}`,'Content-Type':'application/json','Accept':'application/json',...(opts.headers||{})},
-      ...opts
-    });
-    const data = res.status===204?null:await res.json();
-    return {ok:res.ok,status:res.status,data};
-  } catch(e){return {ok:false,error:e.message};}
-}
-async function sbRpc(fn,body={}){
-  return sb(`rpc/${fn}`,{method:'POST',body:JSON.stringify(body)});
-}
 
 // ══════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════
-window.addEventListener('DOMContentLoaded',async()=>{
-  try{S.user=JSON.parse(localStorage.getItem('asp_user'));}catch(e){}
-  if(!S.user){window.location.href='login.html';return;}
-  if(S.user.role!=='admin'){window.location.href='peserta.html';return;}
+window.addEventListener('DOMContentLoaded', async ()=>{
+  try { S.user = JSON.parse(localStorage.getItem('asp_user')); } catch(e){}
+  if (!S.user) { location.href='login.html'; return; }
+  if (S.user.role !== 'admin') { location.href='peserta.html'; return; }
+
   await loadHome();
-  document.getElementById('loadingScreen').style.display='none';
-  document.getElementById('topbar').style.display='flex';
+
+  document.getElementById('loadingS').style.display='none';
+  document.getElementById('tb').style.display='flex';
   document.getElementById('content').style.display='block';
   document.getElementById('bnav').style.display='flex';
-  loadNotifBadge();
 });
 
-async function loadHome(){
-  const {data:asps}=await sb('asp_programs?order=created_at.desc&select=*');
-  S.asps=asps||[];
-  const {data:members}=await sb('asp_members?select=asp_id');
-  const memberCount=members?members.length:0;
-  const activeAsps=S.asps.filter(a=>a.is_active).length;
-  document.getElementById('statASP').textContent=activeAsps;
-  document.getElementById('statPeserta').textContent=memberCount;
-  renderAspList();
+// ══════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════
+async function loadHome() {
+  const [{data:asps},{data:members}] = await Promise.all([
+    GET('asp_programs?order=created_at.desc'),
+    GET('asp_members?select=asp_id')
+  ]);
+  S.asps = asps||[];
+  const active = S.asps.filter(a=>a.is_active).length;
+  document.getElementById('st-asp').textContent = active;
+  document.getElementById('st-p').textContent = (members||[]).length;
+  renderASPList();
 }
 
-function renderAspList(){
-  const list=document.getElementById('aspList');
-  if(!S.asps.length){list.innerHTML=`<div class="empty-state"><i class="ti ti-building-off"></i><p>Belum ada program ASP</p></div>`;return;}
-  list.innerHTML=S.asps.map(a=>`
+function renderASPList() {
+  const el = document.getElementById('asp-list');
+  if (!S.asps.length) { el.innerHTML='<div class="empty">Belum ada program ASP</div>'; return; }
+  el.innerHTML = S.asps.map(a=>`
     <div class="asp-card" onclick="openASP('${a.id}')">
-      <div class="row-between">
+      <div class="row-btw">
         <div class="row-gap">
-          <div class="asp-dot ${a.is_active?'dot-active':'dot-done'}"></div>
+          <div class="asp-dot ${a.is_active?'dot-on':'dot-off'}"></div>
           <div>
-            <div style="font-size:14px;font-weight:800;color:var(--gray);">${a.name}</div>
-            <div style="font-size:12px;color:var(--muted);">${a.organizer||'-'} · ${a.city||'-'}</div>
+            <div style="font-size:14px;font-weight:800;color:var(--gray)">${a.name}</div>
+            <div style="font-size:12px;color:var(--muted)">${a.organizer||'-'} · ${a.city||'-'}</div>
           </div>
         </div>
         <span class="badge ${a.is_active?'b-green':'b-gray'}">${a.is_active?'Aktif':'Selesai'}</span>
       </div>
-      <div style="font-size:11px;color:var(--muted);margin-top:6px;">Skor lulus: ${a.passing_score}%</div>
     </div>`).join('');
-}
-
-// ══════════════════════════════════════════
-// ASP DETAIL
-// ══════════════════════════════════════════
-async function openASP(aspId){
-  S.currentAsp=S.asps.find(a=>a.id===aspId);
-  if(!S.currentAsp)return;
-  document.getElementById('aspDetailName').textContent=S.currentAsp.name;
-  document.getElementById('aspDetailOrg').textContent=`${S.currentAsp.organizer||''} · ${S.currentAsp.city||''}`;
-
-  // Load stats
-  const [{data:members},{data:sessions},{data:attempts}]=await Promise.all([
-    sb(`asp_members?asp_id=eq.${aspId}`),
-    sb(`sessions?asp_id=eq.${aspId}&order=session_number.asc`),
-    sb(`quiz_attempts?asp_id=eq.${aspId}&select=score`)
-  ]);
-  S.currentAspMembers=members||[];
-  S.currentSessions=sessions||[];
-  const avg=attempts&&attempts.length?Math.round(attempts.reduce((s,a)=>s+a.score,0)/attempts.length):0;
-  document.getElementById('aspDetailSesi').textContent=`${S.currentSessions.length}/6 sesi`;
-  document.getElementById('aspDetailPeserta').textContent=`${S.currentAspMembers.length} peserta`;
-  document.getElementById('aspDetailScore').textContent=`Avg: ${avg}`;
-  document.getElementById('menuPesertaCount').textContent=`${(members||[]).length} orang`;
-  document.getElementById('menuSesiCount').textContent=`${(sessions||[]).length} sesi`;
-  showScreen('asp-detail',true,false);
 }
 
 // ══════════════════════════════════════════
 // CREATE ASP
 // ══════════════════════════════════════════
-function adjScore(v){scoreVal=Math.max(0,Math.min(100,scoreVal+v));document.getElementById('scoreVal').textContent=scoreVal;}
+let aspScore = 70;
+function adjScore(v){aspScore=Math.max(0,Math.min(100,aspScore+v));document.getElementById('score-val').textContent=aspScore;}
 
-async function createASP(){
-  const name=document.getElementById('aspName').value.trim();
-  if(!name){showToast('Nama program wajib diisi','error');return;}
-  const {ok,data}=await sbRpc('create_asp_program',{
+async function createASP() {
+  const name = document.getElementById('asp-name').value.trim();
+  if (!name) { toast('Nama program wajib diisi','err'); return; }
+  const {ok} = await RPC('rpc_create_asp',{
     p_name:name,
-    p_organizer:document.getElementById('aspOrg').value.trim(),
-    p_city:document.getElementById('aspCity').value.trim(),
-    p_series_number:parseInt(document.getElementById('aspSeries').value)||null,
-    p_passing_score:scoreVal,
-    p_start_date:document.getElementById('aspStart').value||null,
-    p_end_date:document.getElementById('aspEnd').value||null,
-    p_description:document.getElementById('aspDesc').value.trim(),
+    p_organizer:document.getElementById('asp-org').value.trim(),
+    p_city:document.getElementById('asp-city').value.trim(),
+    p_series:document.getElementById('asp-series').value||'',
+    p_passing_score:String(aspScore),
+    p_start_date:document.getElementById('asp-start').value||'',
+    p_end_date:document.getElementById('asp-end').value||'',
+    p_description:document.getElementById('asp-desc').value.trim(),
     p_created_by:S.user.id
   });
-  if(!ok){showToast('Gagal membuat ASP','error');return;}
-  closeModal('modalASP');
-  showToast('Program ASP berhasil dibuat!','success');
+  if (!ok) { toast('Gagal membuat ASP','err'); return; }
+  closeModal('m-asp');
+  toast('Program ASP berhasil dibuat!','ok');
   await loadHome();
+}
+
+// ══════════════════════════════════════════
+// OPEN ASP
+// ══════════════════════════════════════════
+async function openASP(aspId) {
+  S.asp = S.asps.find(a=>a.id===aspId);
+  if (!S.asp) return;
+
+  document.getElementById('asp-d-name').textContent = S.asp.name;
+  document.getElementById('asp-d-org').textContent = `${S.asp.organizer||''} · ${S.asp.city||''}`;
+
+  const [{data:members},{data:sessions}] = await Promise.all([
+    GET(`asp_members?asp_id=eq.${aspId}`),
+    GET(`sessions?asp_id=eq.${aspId}&order=session_number.asc`)
+  ]);
+  S.members = members||[];
+  S.sessions = sessions||[];
+
+  document.getElementById('asp-d-sesi').textContent = `${S.sessions.length}/6 sesi`;
+  document.getElementById('asp-d-peserta').textContent = `${S.members.length} peserta`;
+  document.getElementById('m-p-count').textContent = `${S.members.length} orang`;
+  document.getElementById('m-s-count').textContent = `${S.sessions.length} sesi`;
+
+  goScreen('asp',false);
 }
 
 // ══════════════════════════════════════════
 // PESERTA
 // ══════════════════════════════════════════
-let editMemberId=null;
-
-async function loadPeserta(){
-  const{ok,data}=await sbRpc('get_asp_members',{p_asp_id:S.currentAsp.id});
-  // RPC returns array of rows
-  const raw = Array.isArray(data) ? data : (data ? [data] : []);
-  const members = raw.map(m=>({
-    id:m.member_id, user_id:m.user_id,
-    church:m.church||'', city:m.city||'',
-    is_paid:m.is_paid||false, is_package_received:m.is_package_received||false,
-    users:{id:m.user_id, full_name:m.full_name||'-', phone:m.phone||'-'}
-  }));
-  S.currentAspMembers=members;
-  renderPeserta(S.currentAspMembers);
+async function loadPeserta() {
+  const {data} = await RPC('get_asp_members',{p_asp_id:S.asp.id});
+  // get_asp_members returns TABLE — Supabase returns array
+  S.members = Array.isArray(data) ? data.map(m=>({
+    id:m.member_id, user_id:m.user_id, church:m.church, city:m.city,
+    is_paid:m.is_paid, is_package_received:m.is_package_received,
+    full_name:m.full_name, phone:m.phone
+  })) : [];
+  renderPeserta(S.members);
 }
 
-function renderPeserta(members){
-  const count=members?members.length:0;
-  document.getElementById('pesertaCount').textContent=`${count} peserta`;
-  const list=document.getElementById('pesertaList');
-  if(!members.length){list.innerHTML=`<div class="empty-state"><i class="ti ti-users-off"></i><p>Belum ada peserta</p></div>`;return;}
-  list.innerHTML=members.map(m=>{
-    const u=m.users||{};
-    return`<div class="member-card">
-      <div class="mname">${u.full_name||'-'}</div>
-      <div class="mmeta">${m.church} · ${u.phone||'-'} · ${m.city||'-'}</div>
-      <div class="check-row">
-        <button class="cpill ${m.is_paid?'cp-yes':'cp-no'}" onclick="toggleCheck('${m.id}','is_paid',${m.is_paid},this)">
+function renderPeserta(list) {
+  document.getElementById('p-count').textContent = `${list.length} peserta`;
+  const el = document.getElementById('peserta-list');
+  if (!list.length) { el.innerHTML='<div class="empty">Belum ada peserta</div>'; return; }
+  el.innerHTML = list.map(m=>`
+    <div class="mcard">
+      <div class="mname">${m.full_name||'-'}</div>
+      <div class="mmeta">${m.church||'-'} · ${m.phone||'-'} · ${m.city||'-'}</div>
+      <div class="chk-row">
+        <button class="cpill ${m.is_paid?'cp-y':'cp-n'}" onclick="toggleChk('${m.id}','is_paid',${m.is_paid},this)">
           ${m.is_paid?'✓':'✗'} Sudah Bayar
         </button>
-        <button class="cpill ${m.is_package_received?'cp-yes':'cp-no'}" onclick="toggleCheck('${m.id}','is_package_received',${m.is_package_received},this)">
+        <button class="cpill ${m.is_package_received?'cp-y':'cp-n'}" onclick="toggleChk('${m.id}','is_package_received',${m.is_package_received},this)">
           ${m.is_package_received?'✓':'✗'} Terima Paket
         </button>
       </div>
-      <div class="mactions">
-        <button class="mact" onclick="editMember('${m.id}','${u.id}','${u.full_name}','${u.phone||''}','${m.church}','${m.city||''}')">Edit</button>
-        <button class="mact" onclick="showResetPW('${u.id}','${u.full_name}')">Reset PW</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function filterPeserta(){
-  const q=document.getElementById('searchPeserta').value.toLowerCase();
-  const filtered=S.currentAspMembers.filter(m=>{
-    const u=m.users||{};
-    return (u.full_name||'').toLowerCase().includes(q)||(m.church||'').toLowerCase().includes(q);
-  });
-  renderPeserta(filtered);
-}
-
-async function toggleCheck(memberId,field,current,btn){
-  const newVal=!current;
-  const{ok}=await sbRpc('update_member_check',{p_member_id:memberId,p_field:field,p_value:newVal});
-  if(!ok){showToast('Gagal update','error');return;}
-  btn.className=`cpill ${newVal?'cp-yes':'cp-no'}`;
-  btn.textContent=`${newVal?'✓':'✗'} ${field==='is_paid'?'Sudah Bayar':'Terima Paket'}`;
-  btn.setAttribute('onclick',`toggleCheck('${memberId}','${field}',${newVal},this)`);
-  showToast('Berhasil diupdate','success');
-}
-
-function showModal(id){document.getElementById(id).classList.add('show');}
-function closeModal(id){document.getElementById(id).classList.remove('show');}
-
-function editMember(mId,uId,name,phone,church,city){
-  editMemberId={mId,uId};
-  document.getElementById('modalMemberTitle').textContent='Edit Peserta';
-  document.getElementById('mFullName').value=name;
-  document.getElementById('mPhone').value=phone;
-  document.getElementById('mChurch').value=church;
-  document.getElementById('mCity').value=city;
-  document.getElementById('mUsername').value='';document.getElementById('mPassword').value='';
-  document.getElementById('mUsername').style.display='none';
-  document.getElementById('mPassword').style.display='none';
-  showModal('modalAddMember');
-}
-
-async function saveMember(){
-  const name=document.getElementById('mFullName').value.trim();
-  const church=document.getElementById('mChurch').value.trim();
-  if(!name||!church){showToast('Nama dan gereja wajib diisi','error');return;}
-  const phone=document.getElementById('mPhone').value.trim();
-  const city=document.getElementById('mCity').value.trim();
-
-  if(editMemberId){
-    // Update via RPC
-    await sbRpc('update_member',{p_user_id:editMemberId.uId,p_member_id:editMemberId.mId,p_full_name:name,p_phone:phone,p_church:church,p_city:city});
-    editMemberId=null;
-    showToast('Data peserta diupdate','success');
-  } else {
-    // Create new user
-    const username=document.getElementById('mUsername').value.trim();
-    const password=document.getElementById('mPassword').value;
-    if(!username||!password){showToast('Username dan password wajib','error');return;}
-    if(password.length<8){showToast('Password min. 8 karakter','error');return;}
-
-    // Hash via RPC
-    const{ok:hashOk,data:hashData}=await sbRpc('create_participant',{
-      p_username:username,p_password:password,p_full_name:name,p_phone:phone,
-      p_asp_id:S.currentAsp.id,p_church:church,p_city:city
-    });
-    if(!hashOk){showToast('Gagal menambah peserta. Cek username sudah ada?','error');return;}
-    showToast('Peserta berhasil ditambah!','success');
-  }
-  closeModal('modalAddMember');
-  document.getElementById('mUsername').style.display='';
-  document.getElementById('mPassword').style.display='';
-  await loadPeserta();
-}
-
-let resetPwUserId=null;
-function showResetPW(userId,name){
-  resetPwUserId=userId;
-  document.getElementById('resetPwName').textContent=name;
-  document.getElementById('resetPwVal').value='';
-  showModal('modalResetPW');
-}
-async function doResetPW(){
-  const pw=document.getElementById('resetPwVal').value;
-  if(!pw||pw.length<8){showToast('Password min. 8 karakter','error');return;}
-  const{ok}=await sbRpc('change_password',{p_user_id:resetPwUserId,p_new_password:pw});
-  if(!ok){showToast('Gagal reset password','error');return;}
-  closeModal('modalResetPW');
-  showToast('Password berhasil direset!','success');
-}
-
-function importExcelPeserta(){showToast('Fitur import akan segera hadir','');}
-
-// ══════════════════════════════════════════
-// SESI
-// ══════════════════════════════════════════
-let editSesiId=null;
-
-async function loadSesi(){
-  const{data}=await sb(`sessions?asp_id=eq.${S.currentAsp.id}&order=session_number.asc`);
-  S.currentSessions=data||[];
-  renderSesi();
-  // Populate absensi select
-  const sel=document.getElementById('absensiSesiSelect');
-  sel.innerHTML='<option value="">-- Pilih Sesi --</option>';
-  S.currentSessions.forEach(s=>{
-    const opt=document.createElement('option');
-    opt.value=s.id;
-    opt.textContent=`Sesi ${s.session_number} — ${s.title}`;
-    sel.appendChild(opt);
-  });
-  // Export sesi
-  const expSel=document.getElementById('exportSesi');
-  expSel.innerHTML='<option value="all">Semua Sesi</option>';
-  S.currentSessions.forEach(s=>{
-    const opt=document.createElement('option');
-    opt.value=s.id;
-    opt.textContent=`Sesi ${s.session_number} — ${s.title}`;
-    expSel.appendChild(opt);
-  });
-}
-
-function renderSesi(){
-  const list=document.getElementById('sesiList');
-  if(!S.currentSessions.length){list.innerHTML=`<div class="empty-state"><i class="ti ti-calendar-off"></i><p>Belum ada sesi</p></div>`;return;}
-  list.innerHTML=S.currentSessions.map(s=>`
-    <div class="sesi-item ${s.is_active?'open':''}">
-      <div class="row-between">
-        <div>
-          <div style="font-size:14px;font-weight:800;color:var(--gray);">Sesi ${s.session_number} — ${s.title}</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:2px;">${s.scheduled_date?formatDate(s.scheduled_date):'Belum dijadwalkan'}</div>
-        </div>
-        <span class="badge ${s.is_active?'b-green':'b-gray'}">${s.is_active?'Aktif':'Tutup'}</span>
-      </div>
-      <div class="toggle-row">
-        <div class="toggle-label">Buka untuk peserta</div>
-        <button class="toggle ${s.is_active?'':'off'}" onclick="toggleSesi('${s.id}',${s.is_active},this)"></button>
-      </div>
-      <div style="display:flex;gap:6px;margin-top:10px;">
-        <button class="btn btn-sm btn-outline" onclick="editSesi('${s.id}')"><i class="ti ti-edit"></i>Edit</button>
+      <div class="macts">
+        <button class="mact" onclick="editMember('${m.id}','${m.user_id}','${(m.full_name||'').replace(/'/g,"\\'")}','${m.phone||''}','${m.church||''}','${m.city||''}')">Edit</button>
+        <button class="mact" onclick="showResetPW('${m.user_id}','${(m.full_name||'').replace(/'/g,"\\'")}')">Reset PW</button>
       </div>
     </div>`).join('');
 }
 
-async function toggleSesi(sesiId,current,btn){
-  const newVal=!current;
-  const{ok}=await sbRpc('toggle_session',{p_session_id:sesiId,p_is_active:newVal});
-  if(!ok){showToast('Gagal update','error');return;}
-  btn.className=`toggle ${newVal?'':'off'}`;
-  btn.setAttribute('onclick',`toggleSesi('${sesiId}',${newVal},this)`);
-  S.currentSessions=S.currentSessions.map(s=>s.id===sesiId?{...s,is_active:newVal}:s);
-  showToast(newVal?'Sesi dibuka!':'Sesi ditutup','success');
+function filterPeserta() {
+  const q = document.getElementById('srch-p').value.toLowerCase();
+  renderPeserta(S.members.filter(m=>(m.full_name||'').toLowerCase().includes(q)||(m.church||'').toLowerCase().includes(q)));
 }
 
-function editSesi(sesiId){
-  const s=S.currentSessions.find(x=>x.id===sesiId);if(!s)return;
-  editSesiId=sesiId;
-  document.getElementById('modalSesiTitle').textContent='Edit Sesi';
-  document.getElementById('sesiNum').value=s.session_number;
-  document.getElementById('sesiTitle').value=s.title;
-  document.getElementById('sesiDate').value=s.scheduled_date||'';
-  document.getElementById('sesiDesc').value=s.description||'';
-  showModal('modalAddSesi');
+async function toggleChk(memberId, field, current, btn) {
+  const nv = !current;
+  const {ok} = await RPC('rpc_toggle_member_check',{p_member_id:memberId,p_field:field,p_value:String(nv)});
+  if (!ok) { toast('Gagal update','err'); return; }
+  btn.className=`cpill ${nv?'cp-y':'cp-n'}`;
+  btn.textContent=`${nv?'✓':'✗'} ${field==='is_paid'?'Sudah Bayar':'Terima Paket'}`;
+  btn.setAttribute('onclick',`toggleChk('${memberId}','${field}',${nv},this)`);
+  toast('Berhasil diupdate','ok');
+}
+
+function editMember(mId,uId,name,phone,church,city) {
+  S.editMember={mId,uId};
+  document.getElementById('m-member-title').textContent='Edit Peserta';
+  document.getElementById('m-name').value=name;
+  document.getElementById('m-phone').value=phone;
+  document.getElementById('m-church').value=church;
+  document.getElementById('m-city').value=city;
+  document.getElementById('m-member-cred').style.display='none';
+  openModal('m-member');
+}
+
+async function saveMember() {
+  const name=document.getElementById('m-name').value.trim();
+  const church=document.getElementById('m-church').value.trim();
+  if(!name||!church){toast('Nama dan gereja wajib diisi','err');return;}
+  const phone=document.getElementById('m-phone').value.trim();
+  const city=document.getElementById('m-city').value.trim();
+
+  if (S.editMember) {
+    await RPC('rpc_update_member',{p_user_id:S.editMember.uId,p_member_id:S.editMember.mId,p_full_name:name,p_phone:phone,p_church:church,p_city:city});
+    S.editMember=null;
+    toast('Data diupdate','ok');
+  } else {
+    const username=document.getElementById('m-username').value.trim();
+    const password=document.getElementById('m-password').value;
+    if(!username||!password){toast('Username dan password wajib','err');return;}
+    if(password.length<8){toast('Password min. 8 karakter','err');return;}
+    const {ok}=await RPC('rpc_create_member',{p_username:username,p_password:password,p_full_name:name,p_phone:phone,p_asp_id:S.asp.id,p_church:church,p_city:city});
+    if(!ok){toast('Gagal. Username mungkin sudah ada.','err');return;}
+    toast('Peserta berhasil ditambah!','ok');
+  }
+  closeModal('m-member');
+  document.getElementById('m-member-title').textContent='Tambah Peserta';
+  document.getElementById('m-member-cred').style.display='';
+  await loadPeserta();
+}
+
+function showResetPW(uid,name){
+  S.resetUserId=uid;
+  document.getElementById('rpw-name').textContent=name;
+  document.getElementById('rpw-val').value='';
+  openModal('m-resetpw');
+}
+async function doResetPW(){
+  const pw=document.getElementById('rpw-val').value;
+  if(!pw||pw.length<8){toast('Password min. 8 karakter','err');return;}
+  const {ok}=await RPC('rpc_reset_password',{p_user_id:S.resetUserId,p_new_password:pw});
+  if(!ok){toast('Gagal reset password','err');return;}
+  closeModal('m-resetpw'); toast('Password direset!','ok');
+}
+
+// ══════════════════════════════════════════
+// SESI
+// ══════════════════════════════════════════
+async function loadSesi() {
+  const {data}=await GET(`sessions?asp_id=eq.${S.asp.id}&order=session_number.asc`);
+  S.sessions=data||[];
+  renderSesi();
+  // Populate absensi select
+  const sel=document.getElementById('ab-sesi-sel');
+  sel.innerHTML='<option value="">-- Pilih Sesi --</option>';
+  S.sessions.forEach(s=>{
+    const o=document.createElement('option');
+    o.value=s.id; o.textContent=`Sesi ${s.session_number} — ${s.title}`;
+    sel.appendChild(o);
+  });
+  // Export select
+  const esel=document.getElementById('exp-sesi');
+  esel.innerHTML='<option value="all">Semua Sesi</option>';
+  S.sessions.forEach(s=>{
+    const o=document.createElement('option');
+    o.value=s.id; o.textContent=`Sesi ${s.session_number} — ${s.title}`;
+    esel.appendChild(o);
+  });
+}
+
+function renderSesi() {
+  const el=document.getElementById('sesi-list');
+  if(!S.sessions.length){el.innerHTML='<div class="empty">Belum ada sesi</div>';return;}
+  el.innerHTML=S.sessions.map(s=>`
+    <div class="sesi-card ${s.is_active?'open':''}">
+      <div class="row-btw">
+        <div>
+          <div style="font-size:14px;font-weight:800;color:var(--gray)">Sesi ${s.session_number} — ${s.title}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">${s.scheduled_date?fmtDate(s.scheduled_date):'Belum dijadwalkan'}</div>
+        </div>
+        <span class="badge ${s.is_active?'b-green':'b-gray'}">${s.is_active?'Aktif':'Tutup'}</span>
+      </div>
+      <div class="toggle-row">
+        <span style="font-size:12px;color:var(--muted)">Buka untuk peserta</span>
+        <button class="tgl ${s.is_active?'':'off'}" onclick="toggleSesi('${s.id}','${s.is_active}',this)"></button>
+      </div>
+      <div style="margin-top:8px">
+        <button class="btn btn-sm" style="background:#F0F0F0;color:var(--gray)" onclick="editSesi('${s.id}')"><i class="ti ti-edit"></i>Edit</button>
+      </div>
+    </div>`).join('');
+}
+
+async function toggleSesi(id,cur,btn){
+  const nv=cur==='true'||cur===true?'false':'true';
+  const {ok}=await RPC('rpc_toggle_session',{p_session_id:id,p_active:nv});
+  if(!ok){toast('Gagal update','err');return;}
+  btn.className=`tgl ${nv==='true'?'':'off'}`;
+  btn.setAttribute('onclick',`toggleSesi('${id}','${nv==='true'}',this)`);
+  S.sessions=S.sessions.map(s=>s.id===id?{...s,is_active:nv==='true'}:s);
+  toast(nv==='true'?'Sesi dibuka!':'Sesi ditutup','ok');
+  renderSesi();
+}
+
+function editSesi(id){
+  S.editSesi=id;
+  const s=S.sessions.find(x=>x.id===id);if(!s)return;
+  document.getElementById('m-sesi-title').textContent='Edit Sesi';
+  document.getElementById('s-num').value=s.session_number;
+  document.getElementById('s-title').value=s.title;
+  document.getElementById('s-date').value=s.scheduled_date||'';
+  document.getElementById('s-desc').value=s.description||'';
+  openModal('m-sesi');
 }
 
 async function saveSesi(){
-  const title=document.getElementById('sesiTitle').value.trim();
-  const num=document.getElementById('sesiNum').value;
-  if(!title){showToast('Judul sesi wajib diisi','error');return;}
-  const body={session_number:parseInt(num),title,scheduled_date:document.getElementById('sesiDate').value||null,description:document.getElementById('sesiDesc').value.trim(),asp_id:S.currentAsp.id,created_by:S.user.id};
-  const rpcBody={
-    p_asp_id:S.currentAsp.id,
-    p_session_number:parseInt(num),
-    p_title:title,
-    p_description:document.getElementById('sesiDesc').value.trim(),
-    p_scheduled_date:document.getElementById('sesiDate').value||null,
+  const title=document.getElementById('s-title').value.trim();
+  const num=document.getElementById('s-num').value;
+  if(!title){toast('Judul sesi wajib diisi','err');return;}
+  const {ok}=await RPC('rpc_upsert_session',{
+    p_asp_id:S.asp.id, p_number:num, p_title:title,
+    p_description:document.getElementById('s-desc').value.trim(),
+    p_date:document.getElementById('s-date').value||'',
     p_created_by:S.user.id
-  };
-  editSesiId=null;
-  const{ok}=await sbRpc('upsert_session',rpcBody);
-  if(!ok){showToast('Gagal menyimpan sesi','error');return;}
-  closeModal('modalAddSesi');
-  showToast('Sesi berhasil disimpan!','success');
+  });
+  S.editSesi=null;
+  if(!ok){toast('Gagal menyimpan sesi','err');return;}
+  closeModal('m-sesi');
+  document.getElementById('m-sesi-title').textContent='Tambah Sesi';
+  toast('Sesi berhasil disimpan!','ok');
   await loadSesi();
 }
 
@@ -910,78 +801,70 @@ async function saveSesi(){
 // ABSENSI
 // ══════════════════════════════════════════
 async function loadAbsensi(){
-  const sesiId=document.getElementById('absensiSesiSelect').value;
-  if(!sesiId){document.getElementById('absensiStats').style.display='none';document.getElementById('absensiList').innerHTML='';document.getElementById('btnSimpanAbsensi').style.display='none';return;}
+  const sesiId=document.getElementById('ab-sesi-sel').value;
+  const abList=document.getElementById('ab-list');
+  const abStats=document.getElementById('ab-stats');
+  const btnAb=document.getElementById('btn-ab');
+  if(!sesiId){abList.innerHTML='';abStats.style.display='none';btnAb.style.display='none';return;}
 
-  const{data:existing}=await sb(`attendance?session_id=eq.${sesiId}&asp_id=eq.${S.currentAsp.id}`);
-  S.absensiData={};
-  (existing||[]).forEach(a=>{S.absensiData[a.user_id]=a.is_present;});
+  // Load existing attendance
+  const {data:existing}=await GET(`attendance?session_id=eq.${sesiId}&asp_id=eq.${S.asp.id}`);
+  S.absensiState={};
+  (existing||[]).forEach(a=>{S.absensiState[a.user_id]=a.is_present;});
 
-  // Always reload fresh for absensi
-  const{data:mData}=await sbRpc('get_asp_members',{p_asp_id:S.currentAsp.id});
-  const raw2=Array.isArray(mData)?mData:(mData?[mData]:[]);
-  const members=raw2.map(m=>({
-    id:m.member_id,user_id:m.user_id,church:m.church||'',city:m.city||'',
-    is_paid:m.is_paid||false,is_package_received:m.is_package_received||false,
-    full_name:m.full_name||'-',
-    users:{id:m.user_id,full_name:m.full_name||'-',phone:m.phone||'-'}
-  }));
-  S.currentAspMembers=members;
-  renderAbsensi(members,sesiId);
-  document.getElementById('btnSimpanAbsensi').style.display='flex';
-}
+  // Load members via RPC
+  const {data:mData}=await RPC('get_asp_members',{p_asp_id:S.asp.id});
+  const members=Array.isArray(mData)?mData.map(m=>({
+    user_id:m.user_id, full_name:m.full_name||'-'
+  })):[];
+  S.members=members.map(m=>({...m,id:m.member_id||m.user_id}));
 
-function renderAbsensi(members,sesiId){
-  if(!members.length){document.getElementById('absensiList').innerHTML=`<div class="empty-state"><i class="ti ti-users-off"></i><p>Belum ada peserta</p></div>`;return;}
-  let hadir=0,tidak=0;
-  members.forEach(m=>{if(S.absensiData[m.user_id]===true)hadir++;else tidak++;});
-  document.getElementById('abHadir').textContent=hadir;
-  document.getElementById('abTidak').textContent=tidak;
-  document.getElementById('abTotal').textContent=members.length;
-  document.getElementById('absensiStats').style.display='block';
+  // Render
+  let hadir=0;
+  members.forEach(m=>{if(S.absensiState[m.user_id]===true)hadir++;});
+  document.getElementById('ab-h').textContent=hadir;
+  document.getElementById('ab-t').textContent=members.length-hadir;
+  document.getElementById('ab-tot').textContent=members.length;
+  abStats.style.display='block';
+  btnAb.style.display='flex';
 
-  document.getElementById('absensiList').innerHTML=members.map(m=>{
-    // Support both old format (m.users.full_name) and new format (m.full_name)
-    const nama=(m.users&&m.users.full_name)||m.full_name||'-';
-    const isHadir=S.absensiData[m.user_id]===true;
-    return`<div class="absen-item">
-      <button class="toggle ${isHadir?'':'off'}" id="tog_${m.user_id}" onclick="toggleAbsen('${m.user_id}',this)"></button>
-      <div class="aname">${nama}</div>
-      <div class="astatus ${isHadir?'ah':'at'}" id="abs_${m.user_id}">${isHadir?'Hadir':'Tidak Hadir'}</div>
+  if(!members.length){abList.innerHTML='<div class="empty">Belum ada peserta</div>';return;}
+  abList.innerHTML=members.map(m=>{
+    const h=S.absensiState[m.user_id]===true;
+    return`<div class="ab-item">
+      <button class="tgl ${h?'':'off'}" onclick="toggleAb('${m.user_id}',this,${members.length})"></button>
+      <div class="ab-name">${m.full_name}</div>
+      <div class="ab-status ${h?'ah':'at'}" id="ab-s-${m.user_id}">${h?'Hadir':'Tidak Hadir'}</div>
     </div>`;
   }).join('');
 }
 
-function toggleAbsen(userId,btn){
-  const current=S.absensiData[userId]===true;
-  const newVal=!current;
-  S.absensiData[userId]=newVal;
-  btn.className=`toggle ${newVal?'':'off'}`;
-  const lbl=document.getElementById(`abs_${userId}`);
-  lbl.textContent=newVal?'Hadir':'Tidak Hadir';
-  lbl.className=`astatus ${newVal?'ah':'at'}`;
-  // Update stats
-  const members=S.currentAspMembers;
-  let hadir=Object.values(S.absensiData).filter(v=>v===true).length;
-  document.getElementById('abHadir').textContent=hadir;
-  document.getElementById('abTidak').textContent=members.length-hadir;
+function toggleAb(uid,btn,total){
+  const cur=S.absensiState[uid]===true;
+  const nv=!cur;
+  S.absensiState[uid]=nv;
+  btn.className=`tgl ${nv?'':'off'}`;
+  const lbl=document.getElementById(`ab-s-${uid}`);
+  lbl.textContent=nv?'Hadir':'Tidak Hadir';
+  lbl.className=`ab-status ${nv?'ah':'at'}`;
+  const hadir=Object.values(S.absensiState).filter(v=>v===true).length;
+  document.getElementById('ab-h').textContent=hadir;
+  document.getElementById('ab-t').textContent=total-hadir;
 }
 
 async function simpanAbsensi(){
-  const sesiId=document.getElementById('absensiSesiSelect').value;
-  if(!sesiId){showToast('Pilih sesi dulu','error');return;}
-  // Build rows: semua member, default false jika belum di-toggle
-  const rows=S.currentAspMembers.map(m=>({
-    asp_id:S.currentAsp.id,session_id:sesiId,user_id:m.user_id,
-    is_present:S.absensiData[m.user_id]===true,marked_by:S.user.id
-  }));
-  const{ok}=await sbRpc('save_attendance',{p_rows:rows});
-  if(!ok){showToast('Gagal menyimpan absensi','error');return;}
-  // Update cert eligibility
-  for(const m of S.currentAspMembers){
-    await sbRpc('fn_check_certificate_eligibility',{p_asp_id:S.currentAsp.id,p_user_id:m.user_id});
+  const sesiId=document.getElementById('ab-sesi-sel').value;
+  if(!sesiId){toast('Pilih sesi dulu','err');return;}
+  let ok=true;
+  for(const [uid,present] of Object.entries(S.absensiState)){
+    const res=await RPC('rpc_save_attendance',{
+      p_asp_id:S.asp.id, p_session_id:sesiId,
+      p_user_id:uid, p_present:String(present), p_by:S.user.id
+    });
+    if(!res.ok){ok=false;break;}
   }
-  showToast('Absensi berhasil disimpan!','success');
+  if(!ok){toast('Gagal menyimpan absensi','err');return;}
+  toast('Absensi berhasil disimpan!','ok');
   await loadAbsensi();
 }
 
@@ -989,179 +872,157 @@ async function simpanAbsensi(){
 // KUIS
 // ══════════════════════════════════════════
 async function loadKuis(){
-  const{data:quizzes}=await sb(`quizzes?asp_id=eq.${S.currentAsp.id}&select=*,sessions(session_number,title)&order=sessions(session_number).asc`);
-  S.currentQuizzes=quizzes||[];
+  const {data}=await GET(`quizzes?asp_id=eq.${S.asp.id}&select=*,sessions(session_number,title)&order=sessions(session_number).asc`);
+  S.quizzes=data||[];
   renderKuis();
 }
 
 function renderKuis(){
-  const list=document.getElementById('kuisList');
-  const sessions=S.currentSessions;
-  let html='';
-  sessions.forEach(s=>{
-    const quiz=S.currentQuizzes.find(q=>q.session_id===s.id);
-    html+=`<div class="kuis-item ${quiz&&quiz.is_active?'active-kuis':''}">
-      <div class="row-between">
+  const el=document.getElementById('kuis-list');
+  if(!S.sessions.length){el.innerHTML='<div class="empty">Tambah sesi dulu</div>';return;}
+  el.innerHTML=S.sessions.map(s=>{
+    const q=S.quizzes.find(x=>x.session_id===s.id);
+    return`<div class="kcard ${q&&q.is_active?'active-k':''}">
+      <div class="row-btw">
         <div>
-          <div style="font-size:14px;font-weight:800;color:var(--gray);">Sesi ${s.session_number} — ${s.title}</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:2px;">${quiz?quiz.title:'Belum ada kuis'}</div>
+          <div style="font-size:14px;font-weight:800;color:var(--gray)">Sesi ${s.session_number} — ${s.title}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">${q?q.title:'Belum ada kuis'}</div>
         </div>
-        ${quiz?`<span class="badge ${quiz.is_active?'b-green':'b-gray'}">${quiz.is_active?'Aktif':'Tutup'}</span>`:'<span class="badge b-amber">Belum</span>'}
+        ${q?`<span class="badge ${q.is_active?'b-green':'b-gray'}">${q.is_active?'Aktif':'Tutup'}</span>`:'<span class="badge b-amber">Belum</span>'}
       </div>
-      ${quiz?`
+      ${q?`
         <div class="toggle-row">
-          <div class="toggle-label">Buka kuis untuk peserta</div>
-          <button class="toggle ${quiz.is_active?'':'off'}" onclick="toggleKuis('${quiz.id}',${quiz.is_active},this)"></button>
+          <span style="font-size:12px;color:var(--muted)">Buka kuis untuk peserta</span>
+          <button class="tgl ${q.is_active?'':'off'}" onclick="toggleKuis('${q.id}','${q.is_active}',this)"></button>
         </div>
-        <div style="display:flex;gap:6px;margin-top:10px;">
-          <button class="btn btn-sm btn-outline" onclick="lihatHasilKuis('${quiz.id}','Sesi ${s.session_number} — ${s.title}')"><i class="ti ti-chart-bar"></i>Lihat Hasil</button>
-          <button class="btn btn-sm" style="background:#F0F0F0;color:var(--gray);" onclick="showUploadSoal('${s.id}','${s.session_number}')"><i class="ti ti-refresh"></i>Ganti Soal</button>
+        <div style="margin-top:8px;display:flex;gap:6px">
+          <button class="btn btn-sm" style="background:#F0F0F0;color:var(--gray)" onclick="showUploadSoal('${s.id}','${s.session_number}')"><i class="ti ti-refresh"></i>Ganti Soal</button>
         </div>`
-      :`<button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="showUploadSoal('${s.id}','${s.session_number}')"><i class="ti ti-upload"></i>Upload Soal</button>`}
+      :`<button class="btn btn-p btn-sm" style="margin-top:10px" onclick="showUploadSoal('${s.id}','${s.session_number}')"><i class="ti ti-upload"></i>Upload Soal</button>`}
     </div>`;
-  });
-  list.innerHTML=html||`<div class="empty-state"><i class="ti ti-pencil-off"></i><p>Tambah sesi dulu</p></div>`;
+  }).join('');
 }
 
-async function toggleKuis(quizId,current,btn){
-  const newVal=!current;
-  const{ok}=await sbRpc('toggle_quiz',{p_quiz_id:quizId,p_is_active:newVal});
-  if(!ok){showToast('Gagal update','error');return;}
-  btn.className=`toggle ${newVal?'':'off'}`;
-  btn.setAttribute('onclick',`toggleKuis('${quizId}',${newVal},this)`);
-  S.currentQuizzes=S.currentQuizzes.map(q=>q.id===quizId?{...q,is_active:newVal}:q);
-  showToast(newVal?'Kuis dibuka!':'Kuis ditutup','success');
+async function toggleKuis(id,cur,btn){
+  const nv=cur==='true'||cur===true?'false':'true';
+  const {ok}=await RPC('rpc_toggle_quiz',{p_quiz_id:id,p_active:nv});
+  if(!ok){toast('Gagal update','err');return;}
+  btn.className=`tgl ${nv==='true'?'':'off'}`;
+  S.quizzes=S.quizzes.map(q=>q.id===id?{...q,is_active:nv==='true'}:q);
+  toast(nv==='true'?'Kuis dibuka!':'Kuis ditutup','ok');
   renderKuis();
 }
 
-let uploadSoalSesiId=null;
-function showUploadSoal(sesiId,sesiNum){
-  uploadSoalSesiId=sesiId;
-  document.getElementById('uploadSoalTitle').textContent=`Upload Soal — Sesi ${sesiNum}`;
-  document.getElementById('soalPreview').style.display='none';
-  document.getElementById('soalFile').value='';
-  S.parsedSoal=[];
-  showModal('modalUploadSoal');
-}
+let kScore=70;
+function adjKScore(v){kScore=Math.max(0,Math.min(100,kScore+v));document.getElementById('k-score-val').textContent=kScore;}
 
-function adjKuisScore(v){S.kuisPassScore=Math.max(0,Math.min(100,S.kuisPassScore+v));document.getElementById('kuisScoreVal').textContent=S.kuisPassScore;}
+function showUploadSoal(sesiId,sesiNum){
+  S.uploadSesiId=sesiId;
+  document.getElementById('m-soal-title').textContent=`Upload Soal — Sesi ${sesiNum}`;
+  document.getElementById('soal-preview').style.display='none';
+  document.getElementById('soal-file').value='';
+  S.parsedSoal=[];
+  openModal('m-soal');
+}
 
 function previewSoal(input){
   if(!input.files[0])return;
-  const file=input.files[0];
   const reader=new FileReader();
   reader.onload=function(e){
     const wb=XLSX.read(e.target.result,{type:'binary'});
     const ws=wb.Sheets[wb.SheetNames[0]];
     const rows=XLSX.utils.sheet_to_json(ws,{header:1});
-    // Lewati baris pertama (header) dan baris kosong
-    const dataRows=rows.slice(1).filter(r=>r[0]&&String(r[0]).trim()!=='Pertanyaan');
-    S.parsedSoal=dataRows.map((r,i)=>({
-      question_text:String(r[0]||''),option_a:String(r[1]||''),option_b:String(r[2]||''),
-      option_c:String(r[3]||''),option_d:String(r[4]||''),
-      correct_answer:String(r[5]||'a').toLowerCase(),order_number:i+1
+    S.parsedSoal=rows.filter(r=>r[0]&&String(r[0]).trim()).map((r,i)=>({
+      text:String(r[0]||'').trim(),
+      a:String(r[1]||'').trim(),
+      b:String(r[2]||'').trim(),
+      c:String(r[3]||'').trim(),
+      d:String(r[4]||'').trim(),
+      answer:String(r[5]||'a').toLowerCase().trim().charAt(0),
+      order:String(i+1)
     }));
-    const preview=document.getElementById('soalPreviewList');
-    preview.innerHTML=S.parsedSoal.slice(0,3).map((q,i)=>`
-      <div class="card" style="padding:10px;margin-bottom:6px;">
-        <div style="font-size:12px;font-weight:700;">${i+1}. ${q.question_text}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:4px;">A: ${q.option_a} | B: ${q.option_b} | C: ${q.option_c} | D: ${q.option_d}</div>
-        <div style="font-size:11px;font-weight:700;color:var(--teal);margin-top:2px;">✓ Jawaban: ${q.correct_answer.toUpperCase()}</div>
-      </div>`).join('')+
-      (S.parsedSoal.length>3?`<div style="text-align:center;font-size:12px;color:var(--muted);">+${S.parsedSoal.length-3} soal lainnya</div>`:'');
-    document.getElementById('soalPreview').style.display='block';
+    const prev=document.getElementById('soal-preview');
+    prev.innerHTML=`<div class="sec">${S.parsedSoal.length} soal ditemukan</div>`+
+      S.parsedSoal.slice(0,3).map((q,i)=>`
+        <div class="card" style="padding:10px;margin-bottom:6px">
+          <div style="font-size:12px;font-weight:700">${i+1}. ${q.text}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">A:${q.a} | B:${q.b} | C:${q.c} | D:${q.d}</div>
+          <div style="font-size:11px;font-weight:700;color:var(--teal);margin-top:2px">✓ Jawaban: ${q.answer.toUpperCase()}</div>
+        </div>`).join('')+
+      (S.parsedSoal.length>3?`<div style="text-align:center;font-size:12px;color:var(--muted)">+${S.parsedSoal.length-3} soal lainnya</div>`:'');
+    prev.style.display='block';
   };
-  reader.readAsBinaryString(file);
+  reader.readAsBinaryString(input.files[0]);
 }
 
 async function uploadSoal(){
-  if(!S.parsedSoal.length){showToast('Upload file Excel dulu','error');return;}
+  if(!S.parsedSoal.length){toast('Upload file Excel dulu','err');return;}
 
-  // Step 1: Upsert quiz
-  const existingQuiz=S.currentQuizzes.find(q=>q.session_id===uploadSoalSesiId);
-  const sesi=S.currentSessions.find(s=>s.id===uploadSoalSesiId);
-  let quizId;
+  document.getElementById('btn-upload-soal').disabled=true;
+  toast('Memproses...','');
 
-  const{data:qData,ok:qOk}=await sbRpc('upsert_quiz',{
-    p_session_id:uploadSoalSesiId,
-    p_asp_id:S.currentAsp.id,
+  // Step 1: Upsert quiz — ambil quiz ID dari DB setelah upsert
+  const sesi=S.sessions.find(s=>s.id===S.uploadSesiId);
+  await RPC('rpc_upsert_quiz',{
+    p_session_id:S.uploadSesiId,
+    p_asp_id:S.asp.id,
     p_title:`Kuis Sesi ${sesi?.session_number||''}`,
-    p_passing_score:S.kuisPassScore,
+    p_passing_score:String(kScore),
     p_created_by:S.user.id
   });
-  if(!qOk){showToast('Gagal membuat kuis','error');return;}
-  // Supabase wraps scalar RETURNS UUID dalam [{upsert_quiz: 'uuid'}]
-  quizId = Array.isArray(qData) ? qData[0]?.upsert_quiz : qData;
-  if(!quizId){showToast('Gagal mendapatkan ID kuis','error');return;}
 
-  // Step 2: Hapus soal lama
-  await sbRpc('delete_quiz_questions',{p_quiz_id:quizId});
+  // Step 2: Ambil quiz ID dari database
+  const {data:qData}=await GET(`quizzes?session_id=eq.${S.uploadSesiId}&select=id`);
+  if(!qData||!qData[0]){toast('Gagal mendapat ID kuis','err');document.getElementById('btn-upload-soal').disabled=false;return;}
+  const quizId=qData[0].id;
 
-  // Step 3: Insert soal satu per satu (tanpa JSONB)
-  let ok=true;
+  // Step 3: Clear soal lama
+  await RPC('rpc_clear_questions',{p_quiz_id:quizId});
+
+  // Step 4: Insert soal satu per satu — SEMUA PARAMETER STRING
+  let failed=false;
   for(const s of S.parsedSoal){
-    const{ok:qOk}=await sbRpc('insert_one_question',{
+    const {ok}=await RPC('rpc_add_question',{
       p_quiz_id:quizId,
-      p_question_text:String(s.question_text||''),
-      p_option_a:String(s.option_a||''),
-      p_option_b:String(s.option_b||''),
-      p_option_c:String(s.option_c||''),
-      p_option_d:String(s.option_d||''),
-      p_correct:String(s.correct_answer||'a').toLowerCase().trim().charAt(0),
-      p_order:parseInt(s.order_number)||1
+      p_text:s.text,
+      p_a:s.a,
+      p_b:s.b,
+      p_c:s.c,
+      p_d:s.d,
+      p_answer:s.answer,
+      p_order:s.order
     });
-    if(!qOk){ok=false;break;}
+    if(!ok){failed=true;break;}
   }
 
-  if(!ok){showToast('Gagal upload soal','error');return;}
-  closeModal('modalUploadSoal');
-  showToast(`${S.parsedSoal.length} soal berhasil diupload!`,'success');
+  document.getElementById('btn-upload-soal').disabled=false;
+
+  if(failed){toast('Gagal upload soal','err');return;}
+  closeModal('m-soal');
+  toast(`${S.parsedSoal.length} soal berhasil diupload!`,'ok');
   await loadKuis();
-}
-
-// ══════════════════════════════════════════
-// HASIL KUIS
-// ══════════════════════════════════════════
-async function lihatHasilKuis(quizId,title){
-  document.getElementById('hasilKuisTitle').textContent=title;
-  const{data:attempts}=await sb(`quiz_attempts?quiz_id=eq.${quizId}&select=*,users(full_name)&order=score.desc`);
-  const arr=attempts||[];
-  const avg=arr.length?Math.round(arr.reduce((s,a)=>s+a.score,0)/arr.length):0;
-  const lulus=arr.filter(a=>a.is_passed).length;
-  document.getElementById('hkAvg').textContent=avg;
-  document.getElementById('hkSubmit').textContent=arr.length;
-  document.getElementById('hkLulus').textContent=lulus;
-  const list=document.getElementById('hasilKuisList');
-  if(!arr.length){list.innerHTML=`<div class="empty-state"><i class="ti ti-chart-off"></i><p>Belum ada yang submit</p></div>`;
-  } else {
-    list.innerHTML=arr.map((a,i)=>`
-      <div class="result-row">
-        <div style="font-size:13px;font-weight:700;color:var(--muted);min-width:24px;">${i+1}</div>
-        <div class="rname">${a.users?.full_name||'-'}</div>
-        <div class="rscore">${Math.round(a.score)}</div>
-        <span class="badge ${a.is_passed?'b-green':'b-red'}" style="font-size:10px;">${a.is_passed?'Lulus':'Tidak'}</span>
-      </div>`).join('');
-  }
-  showScreen('hasil-kuis',true,false);
 }
 
 // ══════════════════════════════════════════
 // LEADERBOARD
 // ══════════════════════════════════════════
-async function loadLeaderboard(){
-  const{data:lb}=await sb(`v_leaderboard?asp_id=eq.${S.currentAsp.id}&order=rank_in_asp.asc&limit=30`);
-  const list=document.getElementById('lbList');
-  const arr=lb||[];
-  if(!arr.length){list.innerHTML=`<div class="empty-state"><i class="ti ti-trophy-off"></i><p>Belum ada data</p></div>`;return;}
+async function loadLB(){
+  const {data}=await GET(`quiz_attempts?asp_id=eq.${S.asp.id}&select=user_id,score,users(full_name)`);
+  const el=document.getElementById('lb-list');
+  if(!data||!data.length){el.innerHTML='<div class="empty">Belum ada data</div>';return;}
+  // Aggregate scores per user
+  const scores={};
+  data.forEach(a=>{
+    if(!scores[a.user_id]){scores[a.user_id]={name:a.users?.full_name||'-',total:0};}
+    scores[a.user_id].total+=a.score;
+  });
+  const sorted=Object.values(scores).sort((a,b)=>b.total-a.total);
   const medals=['🥇','🥈','🥉'];
-  list.innerHTML=arr.map((l,i)=>`
-    <div class="lb-item ${i===0?'g1':i===1?'g2':i===2?'g3':''}">
-      <div class="lrank">${i<3?medals[i]:l.rank_in_asp}</div>
-      <div class="linfo">
-        <div class="lname">${l.full_name}</div>
-        <div class="lchurch">${l.church}</div>
-      </div>
-      <div class="lscore">${Math.round(l.total_score)}</div>
+  el.innerHTML=sorted.map((s,i)=>`
+    <div class="lb-item ${i<3?`g${i+1}`:''}">
+      <div class="lrank">${i<3?medals[i]:i+1}</div>
+      <div class="linfo"><div class="lname">${s.name}</div></div>
+      <div class="lscore">${Math.round(s.total)}</div>
     </div>`).join('');
 }
 
@@ -1169,151 +1030,124 @@ async function loadLeaderboard(){
 // NOTIFIKASI
 // ══════════════════════════════════════════
 async function loadNotif(){
-  const{data:notifs}=await sb(`notifications?order=created_at.desc&limit=20`);
-  const list=document.getElementById('notifList');
-  const arr=notifs||[];
-  if(!arr.length){list.innerHTML=`<div class="empty-state"><i class="ti ti-bell-off"></i><p>Belum ada notifikasi</p></div>`;return;}
-  list.innerHTML=arr.map(n=>`
-    <div class="notif-item">
-      <div class="notif-title">${n.title}</div>
-      <div class="notif-meta">${n.message}</div>
-      <div class="notif-meta" style="margin-top:4px;">Target: ${n.target==='all'?'Semua':'ASP'} · ${timeAgo(n.created_at)}</div>
+  const {data}=await GET('notifications?order=created_at.desc&limit=20');
+  const el=document.getElementById('notif-list');
+  if(!data||!data.length){el.innerHTML='<div class="empty">Belum ada notifikasi</div>';return;}
+  el.innerHTML=data.map(n=>`
+    <div class="card" style="margin-bottom:8px">
+      <div style="font-size:13px;font-weight:700;color:var(--gray)">${n.title}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:3px">${n.message}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">${timeAgo(n.created_at)}</div>
     </div>`).join('');
 }
 
 async function sendNotif(){
-  const title=document.getElementById('notifTitle').value.trim();
-  const msg=document.getElementById('notifMsg').value.trim();
-  if(!title||!msg){showToast('Judul dan pesan wajib diisi','error');return;}
-  const target=document.getElementById('notifTarget').value;
-  const{ok}=await sbRpc('send_notification',{
+  const title=document.getElementById('notif-title').value.trim();
+  const msg=document.getElementById('notif-msg').value.trim();
+  if(!title||!msg){toast('Judul dan pesan wajib diisi','err');return;}
+  const target=document.getElementById('notif-target').value;
+  const {ok}=await RPC('rpc_send_notif',{
     p_title:title,p_message:msg,p_target:target,
-    p_asp_id:target==='asp'&&S.currentAsp?S.currentAsp.id:null,
-    p_created_by:S.user.id
+    p_asp_id:target==='asp'&&S.asp?S.asp.id:'',
+    p_by:S.user.id
   });
-  if(!ok){showToast('Gagal mengirim notifikasi','error');return;}
-  closeModal('modalNotif');
-  showToast('Notifikasi berhasil dikirim!','success');
-  document.getElementById('notifTitle').value='';
-  document.getElementById('notifMsg').value='';
+  if(!ok){toast('Gagal kirim notifikasi','err');return;}
+  closeModal('m-notif');
+  document.getElementById('notif-title').value='';
+  document.getElementById('notif-msg').value='';
+  toast('Notifikasi terkirim!','ok');
   await loadNotif();
-}
-
-async function loadNotifBadge(){
-  const{data}=await sb('notifications?order=created_at.desc&limit=1');
-  // Simple: just show if any exist
 }
 
 // ══════════════════════════════════════════
 // EXPORT
 // ══════════════════════════════════════════
-async function exportData(){
-  if(!S.currentAsp){showToast('Pilih ASP dulu','error');return;}
-  showToast('Menyiapkan data...','');
+async function doExport(){
+  if(!S.asp){toast('Pilih ASP dulu','err');return;}
+  toast('Menyiapkan data...','');
   const wb=XLSX.utils.book_new();
 
-  if(document.getElementById('expPeserta').checked){
-    const{data}=await sb(`asp_members?asp_id=eq.${S.currentAsp.id}&select=*,users(full_name,phone)`);
+  if(document.getElementById('exp-p').checked){
+    const {data}=await RPC('get_asp_members',{p_asp_id:S.asp.id});
     if(data){
-      const rows=data.map(m=>({
-        'Nama':m.users?.full_name,Gereja:m.church,Kota:m.city,
-        Telepon:m.users?.phone,'Sudah Bayar':m.is_paid?'Ya':'Tidak',
-        'Terima Paket':m.is_package_received?'Ya':'Tidak'
-      }));
+      const rows=(Array.isArray(data)?data:[]).map(m=>({'Nama':m.full_name,'Gereja':m.church,'Kota':m.city,'Telepon':m.phone,'Bayar':m.is_paid?'Ya':'Tidak','Paket':m.is_package_received?'Ya':'Tidak'}));
       XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Peserta');
     }
   }
-  if(document.getElementById('expAbsensi').checked){
-    const{data}=await sb(`v_attendance_export?asp_name=eq.${encodeURIComponent(S.currentAsp.name)}`);
-    if(data&&data.length){XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(data),'Absensi');}
-  }
-  if(document.getElementById('expNilai').checked){
-    const{data}=await sb(`v_quiz_export?asp_name=eq.${encodeURIComponent(S.currentAsp.name)}`);
-    if(data&&data.length){XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(data),'Nilai Kuis');}
-  }
-  if(document.getElementById('expLB').checked){
-    const{data}=await sb(`v_leaderboard?asp_id=eq.${S.currentAsp.id}&order=rank_in_asp.asc`);
+  if(document.getElementById('exp-a').checked){
+    const {data}=await GET(`attendance?asp_id=eq.${S.asp.id}&select=*,users(full_name),sessions(session_number,title)`);
     if(data&&data.length){
-      const rows=data.map(l=>({'Ranking':l.rank_in_asp,'Nama':l.full_name,'Gereja':l.church,'Total Skor':Math.round(l.total_score),'Rata-rata':l.avg_score}));
+      const rows=data.map(a=>({'Nama':a.users?.full_name,'Sesi':a.sessions?.session_number,'Judul':a.sessions?.title,'Status':a.is_present?'Hadir':'Tidak Hadir'}));
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Absensi');
+    }
+  }
+  if(document.getElementById('exp-n').checked){
+    const {data}=await GET(`quiz_attempts?asp_id=eq.${S.asp.id}&select=*,users(full_name),quizzes(title)`);
+    if(data&&data.length){
+      const rows=data.map(a=>({'Nama':a.users?.full_name,'Kuis':a.quizzes?.title,'Nilai':Math.round(a.score),'Benar':a.total_correct,'Total':a.total_questions,'Lulus':a.is_passed?'Ya':'Tidak'}));
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Nilai Kuis');
+    }
+  }
+  if(document.getElementById('exp-l').checked){
+    const {data}=await GET(`quiz_attempts?asp_id=eq.${S.asp.id}&select=user_id,score,users(full_name)`);
+    if(data&&data.length){
+      const scores={};
+      data.forEach(a=>{if(!scores[a.user_id])scores[a.user_id]={name:a.users?.full_name,total:0};scores[a.user_id].total+=a.score;});
+      const rows=Object.values(scores).sort((a,b)=>b.total-a.total).map((s,i)=>({'Ranking':i+1,'Nama':s.name,'Total Skor':Math.round(s.total)}));
       XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Leaderboard');
     }
   }
-  const fname=`ASP_${S.currentAsp.name.replace(/[^a-zA-Z0-9]/g,'_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
-  XLSX.writeFile(wb,fname);
-  showToast('File berhasil didownload!','success');
+  XLSX.writeFile(wb,`ASP_${S.asp.name.replace(/[^a-z0-9]/gi,'_')}_${new Date().toISOString().split('T')[0]}.xlsx`);
+  toast('File berhasil didownload!','ok');
 }
 
 // ══════════════════════════════════════════
-// NAVIGATION
+// NAVIGASI
 // ══════════════════════════════════════════
-const mainScreens=['home','notif'];
-const backMap={'asp-detail':'home','peserta':'asp-detail','sesi':'asp-detail','absensi':'asp-detail','kuis':'asp-detail','leaderboard':'asp-detail','export':'asp-detail','hasil-kuis':'kuis'};
+const BACK={asp:'home',peserta:'asp',sesi:'asp',absensi:'asp',kuis:'asp',lb:'asp',export:'asp','notif':'home'};
+const TITLES={home:'Admin YDSU',asp:'Detail ASP',peserta:'Peserta',sesi:'Sesi',absensi:'Absensi',kuis:'Kuis',lb:'Leaderboard','notif':'Notifikasi',export:'Export Data'};
+const MAIN=['home','notif'];
 
-function showScreen(name,pushHistory=true,loadData=true){
+function goScreen(name,load=true){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  const el=document.getElementById(`screen-${name}`);
-  if(el)el.classList.add('active');
-
-  // Topbar
-  const titles={home:'Admin YDSU','asp-detail':S.currentAsp?.name||'Detail ASP',peserta:'Peserta',sesi:'Sesi',absensi:'Absensi',kuis:'Kuis',leaderboard:'Leaderboard',export:'Export Data',notif:'Notifikasi','hasil-kuis':'Hasil Kuis'};
-  document.getElementById('tbTitle').textContent=titles[name]||'Admin';
-  document.getElementById('tbSub').textContent=S.currentAsp&&!mainScreens.includes(name)?S.currentAsp.name:'Panel Admin';
-
-  // Back button
-  const hasBack=!!backMap[name];
-  document.getElementById('btnBack').style.display=hasBack?'flex':'none';
-
-  // Bottom nav
-  document.querySelectorAll('.bi[data-screen]').forEach(b=>b.classList.toggle('active',b.dataset.screen===name));
-
-  // Load data
-  if(loadData){
+  document.getElementById(`sc-${name}`)?.classList.add('active');
+  document.getElementById('tbTitle').textContent=TITLES[name]||'Admin';
+  document.getElementById('tbSub').textContent=S.asp&&!MAIN.includes(name)?S.asp.name:'Panel Admin';
+  document.getElementById('btnBack').style.display=BACK[name]?'flex':'none';
+  document.querySelectorAll('.bi[data-sc]').forEach(b=>b.classList.toggle('active',b.dataset.sc===name));
+  if(load){
     if(name==='peserta')loadPeserta();
     else if(name==='sesi')loadSesi();
-    else if(name==='absensi'){loadSesi();document.getElementById('absensiList').innerHTML='';document.getElementById('absensiStats').style.display='none';document.getElementById('btnSimpanAbsensi').style.display='none';}
-    else if(name==='kuis')loadKuis();
-    else if(name==='leaderboard')loadLeaderboard();
+    else if(name==='absensi'){loadSesi();document.getElementById('ab-list').innerHTML='';document.getElementById('ab-stats').style.display='none';document.getElementById('btn-ab').style.display='none';}
+    else if(name==='kuis'){loadSesi();loadKuis();}
+    else if(name==='lb')loadLB();
     else if(name==='notif')loadNotif();
   }
 }
 
 function goBack(){
-  const cur=document.querySelector('.screen.active')?.id?.replace('screen-','');
-  const back=backMap[cur]||'home';
-  if(back==='asp-detail'&&S.currentAsp){openASP(S.currentAsp.id);return;}
-  showScreen(back);
+  const cur=document.querySelector('.screen.active')?.id?.replace('sc-','');
+  const back=BACK[cur]||'home';
+  if(back==='asp'&&S.asp){openASP(S.asp.id);return;}
+  goScreen(back);
 }
+
+function goMenu(name){goScreen(name);}
+
+// ══════════════════════════════════════════
+// MODAL
+// ══════════════════════════════════════════
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show');}));
 
 // ══════════════════════════════════════════
 // HELPERS
 // ══════════════════════════════════════════
-function logout(){if(!confirm('Yakin ingin keluar?'))return;localStorage.removeItem('asp_user');localStorage.removeItem('asp_token');window.location.href='login.html';}
-function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),2500);}
-function formatDate(str){return new Date(str).toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
-function timeAgo(str){const d=Math.floor((Date.now()-new Date(str))/60000);if(d<1)return'Baru saja';if(d<60)return`${d} menit lalu`;if(d<1440)return`${Math.floor(d/60)} jam lalu`;return`${Math.floor(d/1440)} hari lalu`;}
+function doLogout(){if(!confirm('Yakin ingin keluar?'))return;localStorage.removeItem('asp_user');location.href='login.html';}
+function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),2500);}
+function fmtDate(s){return new Date(s).toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
+function timeAgo(s){const d=Math.floor((Date.now()-new Date(s))/60000);if(d<1)return'Baru saja';if(d<60)return`${d} menit lalu`;if(d<1440)return`${Math.floor(d/60)} jam lalu`;return`${Math.floor(d/1440)} hari lalu`;}
 </script>
-
-<!--
-===================================================
-CATATAN: Tambahkan RPC ini di Supabase SQL Editor:
-
-CREATE OR REPLACE FUNCTION create_participant(
-  p_username TEXT, p_password TEXT, p_full_name TEXT,
-  p_phone TEXT, p_asp_id UUID, p_church TEXT, p_city TEXT
-) RETURNS VOID AS $$
-DECLARE v_user_id UUID;
-BEGIN
-  INSERT INTO users (username, password_hash, full_name, phone, role)
-  VALUES (p_username, crypt(p_password, gen_salt('bf',10)), p_full_name, p_phone, 'participant')
-  RETURNING id INTO v_user_id;
-
-  INSERT INTO asp_members (asp_id, user_id, church, city)
-  VALUES (p_asp_id, v_user_id, p_church, p_city);
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-GRANT EXECUTE ON FUNCTION create_participant TO anon;
-===================================================
--->
 </body>
 </html>

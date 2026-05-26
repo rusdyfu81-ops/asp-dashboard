@@ -4,1218 +4,667 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Peserta — Sejarah Penebusan ASP</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --teal:#1DB89A;--teal-dark:#0F8870;--teal-deep:#0A6557;
-  --teal-light:#E1F5EE;--teal-mid:#9FE1CB;
-  --green:#3CB84A;--gray:#4D4D4D;--muted:#888;
-  --border:#EBEBEB;--danger:#E24B4A;--amber:#EF9F27;
-  --amber-light:#FFF3D6;--white:#fff;--bg:#F4F6F8;
-}
-html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);overflow:hidden;}
-
-/* ── APP SHELL ── */
-.app{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;background:var(--bg);position:relative;}
-
-/* ── TOPBAR ── */
-.topbar{
-  background:linear-gradient(135deg,var(--teal) 0%,var(--teal-dark) 100%);
-  padding:12px 16px 10px;display:flex;align-items:center;
-  justify-content:space-between;flex-shrink:0;
-  box-shadow:0 2px 12px rgba(29,184,154,0.2);
-  position:relative;z-index:10;
-}
-.topbar-left{display:flex;align-items:center;gap:8px;}
-.topbar-back{background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;}
-.topbar-logo{display:flex;align-items:center;gap:8px;}
-.topbar-logo svg{width:28px;height:28px;}
-.topbar-info .title{font-size:13px;font-weight:800;color:white;letter-spacing:0.3px;}
-.topbar-info .sub{font-size:10px;color:rgba(255,255,255,0.75);margin-top:1px;}
-.topbar-right{display:flex;align-items:center;gap:8px;}
-.notif-btn{position:relative;background:rgba(255,255,255,0.15);border:none;color:white;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;}
-.notif-badge{position:absolute;top:-2px;right:-2px;background:var(--danger);color:white;font-size:7px;font-weight:800;border-radius:10px;padding:1px 4px;min-width:14px;text-align:center;border:1.5px solid white;}
-.avatar-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);color:white;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-
-/* ── CONTENT AREA ── */
-.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
-.screen{display:none;min-height:100%;padding-bottom:80px;}
-.screen.active{display:block;}
-.screen-fade{animation:fadeIn 0.25s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-
-/* ── BOTTOM NAV ── */
-.bnav{
-  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
-  width:100%;max-width:480px;
-  background:white;border-top:1px solid var(--border);
-  display:flex;justify-content:space-around;
-  padding:8px 0 calc(8px + env(safe-area-inset-bottom));
-  z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,0.06);
-}
-.bnav-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--muted);cursor:pointer;min-width:60px;padding:4px 0;transition:color 0.2s;border:none;background:none;}
-.bnav-item i{font-size:22px;transition:transform 0.2s;}
-.bnav-item.active{color:var(--teal);}
-.bnav-item.active i{transform:translateY(-2px);}
-
-/* ── CARDS & COMPONENTS ── */
-.card{background:white;border-radius:16px;padding:16px;margin-bottom:12px;border:0.5px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.04);}
-.card-teal{background:linear-gradient(135deg,var(--teal) 0%,var(--teal-dark) 100%);border-radius:16px;padding:16px;margin-bottom:12px;color:white;box-shadow:0 4px 16px rgba(29,184,154,0.25);}
-.sec-head{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;}
-.page-pad{padding:16px;}
-
-/* ── HOME SCREEN ── */
-.greeting-name{font-size:18px;font-weight:900;color:white;margin-bottom:2px;}
-.greeting-sub{font-size:12px;color:rgba(255,255,255,0.8);}
-.next-sesi{margin-top:12px;background:rgba(255,255,255,0.15);border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,0.2);}
-.next-label{font-size:10px;color:rgba(255,255,255,0.7);font-weight:700;letter-spacing:0.5px;margin-bottom:4px;}
-.next-title{font-size:14px;font-weight:800;color:white;}
-.next-date{font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;}
-.stat2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-.stat-box{background:white;border-radius:14px;padding:14px 12px;text-align:center;border:0.5px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.04);}
-.stat-val{font-size:22px;font-weight:900;color:var(--teal);line-height:1;}
-.stat-lbl{font-size:11px;color:var(--muted);margin-top:3px;font-weight:600;}
-
-/* ── SESI SCREEN ── */
-.sesi-item{display:flex;align-items:center;gap:12px;padding:14px;background:white;border-radius:14px;margin-bottom:8px;border:0.5px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.04);cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;}
-.sesi-item:active{transform:scale(0.98);}
-.sesi-item.active-sesi{border-color:var(--amber);background:var(--amber-light);}
-.sdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.dot-done{background:var(--teal);}
-.dot-open{background:var(--amber);}
-.dot-lock{background:#CCC;}
-.sinfo{flex:1;}
-.stitle{font-size:14px;font-weight:700;color:var(--gray);}
-.sdate{font-size:11px;color:var(--muted);margin-top:2px;}
-.sbadge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;white-space:nowrap;}
-.b-done{background:var(--teal-light);color:#0F6E56;}
-.b-open{background:var(--amber-light);color:#854F0B;}
-.b-lock{background:#F0F0F0;color:#999;}
-
-/* ── KUIS SCREEN ── */
-.kuis-card{background:white;border-radius:14px;padding:14px;margin-bottom:8px;border:0.5px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.04);}
-.kuis-status-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
-.btn-kerjakan{background:var(--teal);color:white;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;}
-.btn-review{background:var(--teal-light);color:var(--teal-dark);border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;}
-
-/* ── QUIZ PLAY ── */
-.quiz-play{display:none;position:fixed;inset:0;background:white;z-index:200;flex-direction:column;max-width:480px;margin:0 auto;}
-.quiz-play.show{display:flex;}
-.quiz-header{background:linear-gradient(135deg,var(--teal),var(--teal-dark));padding:14px 16px;color:white;flex-shrink:0;}
-.quiz-prog-bar{height:4px;background:rgba(255,255,255,0.25);border-radius:2px;margin-top:10px;overflow:hidden;}
-.quiz-prog-fill{height:100%;background:white;border-radius:2px;transition:width 0.4s ease;}
-.quiz-body{flex:1;overflow-y:auto;padding:16px;}
-.qdots{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
-.qdot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;transition:all 0.2s;}
-.qdot.answered{background:var(--teal);border-color:var(--teal);color:white;}
-.qdot.current{border-color:var(--amber);color:var(--amber);}
-.qtext{font-size:15px;font-weight:700;color:var(--gray);line-height:1.55;margin-bottom:16px;}
-.qopt{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);margin-bottom:10px;cursor:pointer;transition:all 0.2s;background:white;}
-.qopt:active{transform:scale(0.98);}
-.qopt.sel{border-color:var(--teal);background:var(--teal-light);}
-.ocircle{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--muted);transition:all 0.2s;}
-.qopt.sel .ocircle{border-color:var(--teal);color:var(--teal);background:white;}
-.otext{font-size:13px;color:var(--gray);line-height:1.4;}
-.quiz-footer{padding:14px 16px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0;background:white;}
-.btn-prev{flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:white;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;font-family:'Nunito',sans-serif;}
-.btn-next{flex:2;padding:12px;border-radius:12px;border:none;background:var(--teal);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;}
-.btn-submit-quiz{flex:2;padding:12px;border-radius:12px;border:none;background:var(--amber);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;}
-
-/* ── KONFIRMASI MODAL ── */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:flex-end;justify-content:center;}
-.modal-overlay.show{display:flex;}
-.modal-box{background:white;border-radius:24px 24px 0 0;padding:24px;width:100%;max-width:480px;animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);}
-@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
-.modal-title{font-size:16px;font-weight:800;color:var(--gray);margin-bottom:8px;}
-.modal-text{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;}
-.modal-btns{display:flex;gap:10px;}
-.btn-cancel{flex:1;padding:13px;border-radius:12px;border:1.5px solid var(--border);background:white;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;font-family:'Nunito',sans-serif;}
-.btn-confirm{flex:2;padding:13px;border-radius:12px;border:none;background:var(--teal);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;}
-
-/* ── HASIL KUIS ── */
-.score-circle{width:110px;height:110px;border-radius:50%;background:var(--teal-light);border:4px solid var(--teal);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 16px;}
-.score-num{font-size:32px;font-weight:900;color:var(--teal);line-height:1;}
-.score-lbl{font-size:10px;color:var(--teal-dark);font-weight:700;}
-.review-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border);}
-.review-row i{font-size:20px;}
-.ri-cor{color:var(--teal);}
-.ri-wrong{color:var(--danger);}
-.review-text{font-size:13px;color:var(--gray);}
-.review-correct{font-size:11px;color:var(--teal-dark);font-weight:700;margin-top:1px;}
-
-/* ── LEADERBOARD ── */
-.lb-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:white;border-radius:14px;margin-bottom:8px;border:0.5px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.04);}
-.lb-item.g1{background:#FFFBEA;border-color:#EF9F27;}
-.lb-item.g2{background:#F5F5F5;border-color:#B4B2A9;}
-.lb-item.g3{background:#FFF4EE;border-color:#F0997B;}
-.lb-item.me{background:var(--teal-light);border-color:var(--teal);}
-.lrank{font-size:18px;font-weight:900;min-width:28px;text-align:center;}
-.linfo{flex:1;}
-.lname{font-size:13px;font-weight:700;color:var(--gray);}
-.lchurch{font-size:11px;color:var(--muted);}
-.lscore{font-size:16px;font-weight:900;color:var(--teal);}
-.lb-divider{text-align:center;font-size:12px;color:var(--muted);margin:6px 0;}
-
-/* ── GALLERY ── */
-.gtabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:14px;overflow-x:auto;}
-.gtab{flex-shrink:0;padding:8px 14px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;white-space:nowrap;}
-.gtab.active{color:var(--teal);border-bottom-color:var(--teal);}
-.ggrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
-.gthumb{border-radius:12px;aspect-ratio:1;background:var(--teal-light);display:flex;align-items:center;justify-content:center;border:0.5px solid var(--border);overflow:hidden;cursor:pointer;position:relative;}
-.gthumb img{width:100%;height:100%;object-fit:cover;}
-.gthumb i{font-size:32px;color:var(--teal-mid);}
-.upload-zone{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border:2px dashed var(--teal);border-radius:14px;background:var(--teal-light);font-size:13px;color:var(--teal-dark);font-weight:700;cursor:pointer;}
-.upload-zone input{display:none;}
-
-/* ── PROFIL ── */
-.profile-hero{text-align:center;padding:20px 0 16px;}
-.avatar-lg{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-dark));margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:white;box-shadow:0 4px 16px rgba(29,184,154,0.3);}
-.pname{font-size:18px;font-weight:900;color:var(--gray);}
-.pasp{font-size:12px;color:var(--muted);margin-top:3px;}
-.cert-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;margin-top:8px;}
-.cert-eligible{background:var(--teal-light);color:#0F6E56;}
-.cert-pending{background:var(--amber-light);color:#854F0B;}
-.prow{display:flex;align-items:center;padding:12px 0;border-bottom:0.5px solid var(--border);gap:12px;}
-.prow i{font-size:20px;color:var(--teal);width:24px;}
-.plbl{font-size:11px;color:var(--muted);}
-.pval{font-size:14px;font-weight:700;color:var(--gray);}
-.btn-outline{width:100%;border:2px solid var(--teal);color:var(--teal);background:white;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:12px;}
-.btn-danger-outline{width:100%;border:2px solid var(--danger);color:var(--danger);background:white;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:8px;}
-
-/* ── NOTIFIKASI ── */
-.notif-item{display:flex;gap:12px;padding:14px;background:white;border-radius:14px;margin-bottom:8px;border:0.5px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.04);}
-.notif-item.unread{border-left:3px solid var(--teal);}
-.notif-dot{width:10px;height:10px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:4px;}
-.notif-dot.read{background:#CCC;}
-.notif-title{font-size:13px;font-weight:700;color:var(--gray);}
-.notif-msg{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;}
-.notif-time{font-size:10px;color:var(--muted);margin-top:4px;}
-
-/* ── GANTI PASSWORD MODAL ── */
-.pw-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:flex-end;justify-content:center;}
-.pw-modal.show{display:flex;}
-.pw-box{background:white;border-radius:24px 24px 0 0;padding:24px;width:100%;max-width:480px;animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);}
-.pw-field{margin-bottom:14px;}
-.pw-field label{display:block;font-size:12px;font-weight:700;color:var(--gray);margin-bottom:6px;}
-.pw-field input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;font-family:'Nunito',sans-serif;color:var(--gray);outline:none;}
-.pw-field input:focus{border-color:var(--teal);}
-
-/* ── EMPTY STATE ── */
-.empty-state{text-align:center;padding:40px 20px;}
-.empty-state i{font-size:48px;color:var(--teal-mid);margin-bottom:12px;}
-.empty-state p{font-size:14px;color:var(--muted);font-weight:600;}
-
-/* ── SKELETON LOADER ── */
-.skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;}
-@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--gray);color:white;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap;transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);z-index:999;box-shadow:0 4px 16px rgba(0,0,0,0.15);}
-.toast.show{transform:translateX(-50%) translateY(0);}
-.toast.success{background:var(--teal);}
-.toast.error{background:var(--danger);}
-
-/* ── LOADING ── */
-.loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:16px;}
-.loading-screen i{font-size:48px;color:var(--teal);animation:pulse 1.5s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+:root{--teal:#1DB89A;--teal-dark:#0F8870;--gray:#4D4D4D;--muted:#888;--border:#EBEBEB;--danger:#E24B4A;--amber:#EF9F27;--amber-lt:#FFF3D6;--teal-lt:#E1F5EE;--bg:#F4F6F8;--white:#fff}
+html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);overflow:hidden}
+.app{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;background:var(--bg)}
+.tb{background:linear-gradient(135deg,var(--teal),var(--teal-dark));padding:11px 16px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:10}
+.tb-l{display:flex;align-items:center;gap:8px}
+.tb-title{font-size:13px;font-weight:800;color:white}
+.tb-sub{font-size:10px;color:rgba(255,255,255,0.75);margin-top:1px}
+.tb-r{display:flex;gap:8px;align-items:center}
+.tb-btn{background:rgba(255,255,255,0.15);border:none;color:white;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;position:relative}
+.nb{position:absolute;top:-2px;right:-2px;background:var(--danger);color:white;font-size:7px;font-weight:800;border-radius:10px;padding:1px 4px;min-width:14px;text-align:center;border:1.5px solid white;display:none}
+.av{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);color:white;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.screen{display:none;min-height:100%;padding-bottom:90px}
+.screen.active{display:block;animation:fi 0.22s ease}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:white;border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,0.06)}
+.bi{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--muted);cursor:pointer;min-width:60px;padding:4px 0;border:none;background:none}
+.bi i{font-size:22px}
+.bi.active{color:var(--teal)}
+.pp{padding:16px}
+.card{background:white;border-radius:14px;padding:14px;margin-bottom:10px;border:0.5px solid var(--border)}
+.card-teal{background:linear-gradient(135deg,var(--teal),var(--teal-dark));border-radius:14px;padding:14px;margin-bottom:10px;color:white}
+.sec{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px}
+.stat2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.sbox{background:white;border-radius:12px;padding:12px;text-align:center;border:0.5px solid var(--border)}
+.sv{font-size:22px;font-weight:900;color:var(--teal);line-height:1}
+.sl{font-size:10px;color:var(--muted);margin-top:3px;font-weight:600}
+/* SESI */
+.sesi-item{display:flex;align-items:center;gap:12px;padding:14px;background:white;border-radius:14px;margin-bottom:8px;border:0.5px solid var(--border)}
+.sesi-item.open{border-color:var(--amber);background:var(--amber-lt)}
+.sdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dot-done{background:var(--teal)}.dot-open{background:var(--amber)}.dot-lock{background:#CCC}
+.si{flex:1}
+.st{font-size:14px;font-weight:700;color:var(--gray)}
+.sd{font-size:11px;color:var(--muted);margin-top:2px}
+.sbadge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px}
+.b-done{background:var(--teal-lt);color:#0F6E56}
+.b-open{background:var(--amber-lt);color:#854F0B}
+.b-lock{background:#F0F0F0;color:#999}
+/* KUIS */
+.kcard{background:white;border-radius:14px;padding:14px;margin-bottom:8px;border:0.5px solid var(--border)}
+.btn-k{border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif}
+.btn-do{background:var(--teal);color:white}
+.btn-rv{background:var(--teal-lt);color:var(--teal-dark)}
+/* QUIZ PLAY */
+.quiz-play{display:none;position:fixed;inset:0;background:white;z-index:200;flex-direction:column;max-width:480px;margin:0 auto}
+.quiz-play.show{display:flex}
+.qh{background:linear-gradient(135deg,var(--teal),var(--teal-dark));padding:14px 16px;color:white;flex-shrink:0}
+.qpb{height:4px;background:rgba(255,255,255,0.25);border-radius:2px;margin-top:10px;overflow:hidden}
+.qpf{height:100%;background:white;border-radius:2px;transition:width 0.4s}
+.qbody{flex:1;overflow-y:auto;padding:16px}
+.qdots{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.qdot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);cursor:pointer}
+.qdot.ans{background:var(--teal);border-color:var(--teal);color:white}
+.qdot.cur{border-color:var(--amber);color:var(--amber)}
+.qtext{font-size:15px;font-weight:700;color:var(--gray);line-height:1.55;margin-bottom:16px}
+.qopt{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);margin-bottom:10px;cursor:pointer;background:white}
+.qopt.sel{border-color:var(--teal);background:var(--teal-lt)}
+.oc{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--muted)}
+.qopt.sel .oc{border-color:var(--teal);color:var(--teal)}
+.ot{font-size:13px;color:var(--gray);line-height:1.4}
+.qfoot{padding:14px 16px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0;background:white}
+.btn-prev{flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:white;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;font-family:'Nunito',sans-serif}
+.btn-next{flex:2;padding:12px;border-radius:12px;border:none;background:var(--teal);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif}
+.btn-submit{flex:2;padding:12px;border-radius:12px;border:none;background:var(--amber);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif}
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:flex-end;justify-content:center}
+.modal.show{display:flex}
+.mbox{background:white;border-radius:24px 24px 0 0;padding:24px;width:100%;max-width:480px;animation:su 0.3s cubic-bezier(0.16,1,0.3,1)}
+@keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.m-title{font-size:16px;font-weight:800;color:var(--gray);margin-bottom:8px}
+.m-text{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px}
+.m-btns{display:flex;gap:10px}
+.m-cancel{flex:1;padding:13px;border-radius:12px;border:1.5px solid var(--border);background:white;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;font-family:'Nunito',sans-serif}
+.m-ok{flex:2;padding:13px;border-radius:12px;border:none;background:var(--teal);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif}
+/* LEADERBOARD */
+.lb{display:flex;align-items:center;gap:10px;padding:12px 14px;background:white;border-radius:12px;margin-bottom:6px;border:0.5px solid var(--border)}
+.lb.g1{background:#FFFBEA;border-color:#EF9F27}
+.lb.g2{background:#F5F5F5;border-color:#B4B2A9}
+.lb.g3{background:#FFF4EE;border-color:#F0997B}
+.lb.me{background:var(--teal-lt);border-color:var(--teal)}
+.lr{font-size:16px;font-weight:900;min-width:26px;text-align:center}
+.li{flex:1}
+.ln{font-size:13px;font-weight:700;color:var(--gray)}
+.lc{font-size:11px;color:var(--muted)}
+.ls{font-size:15px;font-weight:900;color:var(--teal)}
+/* NOTIF */
+.ni{display:flex;gap:12px;padding:14px;background:white;border-radius:14px;margin-bottom:8px;border:0.5px solid var(--border)}
+.ni.unread{border-left:3px solid var(--teal)}
+.ndot{width:10px;height:10px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:4px}
+.ndot.read{background:#CCC}
+/* PROFIL */
+.ph{text-align:center;padding:16px 0 12px}
+.av-lg{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-dark));margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:white}
+.prow{display:flex;align-items:center;padding:12px 0;border-bottom:0.5px solid var(--border);gap:12px}
+.prow i{font-size:20px;color:var(--teal);width:24px}
+.plbl{font-size:11px;color:var(--muted)}
+.pval{font-size:14px;font-weight:700;color:var(--gray)}
+.btn-out{width:100%;border:2px solid var(--teal);color:var(--teal);background:white;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:12px}
+.btn-danger{width:100%;border:2px solid var(--danger);color:var(--danger);background:white;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:8px}
+/* PW MODAL */
+.pw-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:flex-end;justify-content:center}
+.pw-modal.show{display:flex}
+.pw-box{background:white;border-radius:24px 24px 0 0;padding:24px;width:100%;max-width:480px;animation:su 0.3s cubic-bezier(0.16,1,0.3,1)}
+.pw-field{margin-bottom:14px}
+.pw-field label{display:block;font-size:12px;font-weight:700;color:var(--gray);margin-bottom:5px}
+.pw-field input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;font-family:'Nunito',sans-serif;color:var(--gray);outline:none}
+.pw-field input:focus{border-color:var(--teal)}
+/* HASIL */
+.sc-circle{width:110px;height:110px;border-radius:50%;background:var(--teal-lt);border:4px solid var(--teal);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 16px}
+.sc-num{font-size:32px;font-weight:900;color:var(--teal);line-height:1}
+.rr{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.rr i{font-size:20px}
+.rc{color:var(--teal)}.rw{color:var(--danger)}
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--gray);color:white;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap;transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);z-index:999}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{background:var(--teal)}.toast.err{background:var(--danger)}
+.ls-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:16px;color:var(--muted);font-size:14px;font-weight:600}
+.ls-screen i{font-size:48px;color:var(--teal);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;font-weight:600}
 </style>
 </head>
 <body>
+<div class="app">
 
-<div class="app" id="app">
+<div class="ls-screen" id="ls"><i class="ti ti-leaf"></i>Memuat data...</div>
 
-  <!-- LOADING -->
-  <div class="loading-screen" id="loadingScreen">
-    <i class="ti ti-leaf"></i>
-    <div style="font-size:14px;color:var(--muted);font-weight:600;">Memuat data...</div>
-  </div>
-
-  <!-- TOPBAR -->
-  <div class="topbar" id="topbar" style="display:none;">
-    <div class="topbar-left">
-      <div class="topbar-logo">
-        <svg viewBox="0 0 40 40" fill="none">
-          <rect x="2" y="25" width="15" height="11" rx="2" fill="white"/>
-          <rect x="23" y="25" width="15" height="11" rx="2" fill="white"/>
-          <rect x="16" y="23" width="8" height="13" rx="1" fill="rgba(255,255,255,0.45)"/>
-          <rect x="18" y="15" width="4" height="10" rx="1.5" fill="rgba(255,255,255,0.85)"/>
-          <ellipse cx="13" cy="14" rx="2.2" ry="2.2" fill="rgba(255,255,255,0.95)"/>
-          <ellipse cx="20" cy="9"  rx="2.2" ry="2.2" fill="rgba(255,255,255,0.95)"/>
-          <ellipse cx="27" cy="14" rx="2.2" ry="2.2" fill="rgba(255,255,255,0.95)"/>
-          <ellipse cx="16" cy="7"  rx="1.6" ry="1.6" fill="rgba(255,255,255,0.7)"/>
-          <ellipse cx="24" cy="7"  rx="1.6" ry="1.6" fill="rgba(255,255,255,0.7)"/>
-        </svg>
-        <div class="topbar-info">
-          <div class="title" id="topbarTitle">Sejarah Penebusan</div>
-          <div class="sub" id="topbarSub">Program ASP</div>
-        </div>
-      </div>
-    </div>
-    <div class="topbar-right">
-      <button class="notif-btn" onclick="showScreen('notif')">
-        <i class="ti ti-bell"></i>
-        <div class="notif-badge" id="notifBadge" style="display:none;">0</div>
-      </button>
-      <div class="avatar-btn" id="avatarBtn" onclick="showScreen('profil')">YP</div>
+<!-- TOPBAR -->
+<div class="tb" id="tb" style="display:none">
+  <div class="tb-l">
+    <div>
+      <div class="tb-title" id="tb-title">Sejarah Penebusan</div>
+      <div class="tb-sub" id="tb-sub">Program ASP</div>
     </div>
   </div>
+  <div class="tb-r">
+    <button class="tb-btn" onclick="goScreen('notif')">
+      <i class="ti ti-bell"></i>
+      <div class="nb" id="nb">0</div>
+    </button>
+    <div class="av" id="av-btn" onclick="goScreen('profil')">-</div>
+  </div>
+</div>
 
-  <!-- CONTENT -->
-  <div class="content" id="content" style="display:none;">
+<!-- CONTENT -->
+<div class="content" id="content" style="display:none">
 
-    <!-- ══ HOME ══ -->
-    <div class="screen active screen-fade" id="screen-home">
-      <div class="page-pad">
-        <div class="card-teal">
-          <div class="greeting-name" id="greetName">Halo 👋</div>
-          <div class="greeting-sub" id="greetSub">Memuat data...</div>
-          <div class="next-sesi" id="nextSesiCard">
-            <div class="next-label">SESI BERIKUTNYA</div>
-            <div class="next-title" id="nextSesiTitle">-</div>
-            <div class="next-date" id="nextSesiDate">-</div>
-          </div>
-        </div>
-        <div class="stat2">
-          <div class="stat-box">
-            <div class="stat-val" id="statHadir">-</div>
-            <div class="stat-lbl">Kehadiran</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-val" id="statRank">-</div>
-            <div class="stat-lbl">Ranking</div>
-          </div>
-        </div>
-        <div class="sec-head">Notifikasi Terbaru</div>
-        <div id="homeNotifList"><div class="empty-state" style="padding:20px;"><i class="ti ti-bell-off"></i><p>Belum ada notifikasi</p></div></div>
-      </div>
-    </div>
-
-    <!-- ══ SESI ══ -->
-    <div class="screen screen-fade" id="screen-sesi">
-      <div class="page-pad">
-        <div class="sec-head">Sesi & Absensi</div>
-        <div id="sesiList"><div class="skeleton" style="height:72px;margin-bottom:8px;"></div><div class="skeleton" style="height:72px;margin-bottom:8px;"></div><div class="skeleton" style="height:72px;"></div></div>
-      </div>
-    </div>
-
-    <!-- ══ KUIS ══ -->
-    <div class="screen screen-fade" id="screen-kuis">
-      <div class="page-pad">
-        <div class="sec-head">Kuis per Sesi</div>
-        <div id="kuisList"><div class="skeleton" style="height:90px;margin-bottom:8px;"></div><div class="skeleton" style="height:90px;"></div></div>
-      </div>
-    </div>
-
-    <!-- ══ LAINNYA ══ -->
-    <div class="screen screen-fade" id="screen-lainnya">
-      <div class="page-pad">
-        <div class="sec-head" style="margin-bottom:12px;">Menu Lainnya</div>
-        <div class="card" style="cursor:pointer;" onclick="showScreen('leaderboard')">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <i class="ti ti-trophy" style="font-size:24px;color:var(--teal);"></i>
-            <div><div style="font-size:14px;font-weight:700;color:var(--gray);">Leaderboard</div><div style="font-size:12px;color:var(--muted);">Ranking peserta</div></div>
-            <i class="ti ti-chevron-right" style="margin-left:auto;color:var(--muted);"></i>
-          </div>
-        </div>
-        <div class="card" style="cursor:pointer;" onclick="showScreen('gallery')">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <i class="ti ti-photo" style="font-size:24px;color:var(--teal);"></i>
-            <div><div style="font-size:14px;font-weight:700;color:var(--gray);">Gallery Foto</div><div style="font-size:12px;color:var(--muted);">Dokumentasi per sesi</div></div>
-            <i class="ti ti-chevron-right" style="margin-left:auto;color:var(--muted);"></i>
-          </div>
-        </div>
-        <div class="card" style="cursor:pointer;" onclick="showScreen('notif')">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <i class="ti ti-bell" style="font-size:24px;color:var(--teal);"></i>
-            <div><div style="font-size:14px;font-weight:700;color:var(--gray);">Notifikasi</div><div style="font-size:12px;color:var(--muted);">Pesan dari admin</div></div>
-            <i class="ti ti-chevron-right" style="margin-left:auto;color:var(--muted);"></i>
-          </div>
-        </div>
-        <div class="card" style="cursor:pointer;" onclick="showScreen('profil')">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <i class="ti ti-user" style="font-size:24px;color:var(--teal);"></i>
-            <div><div style="font-size:14px;font-weight:700;color:var(--gray);">Profil Saya</div><div style="font-size:12px;color:var(--muted);">Data diri & ganti password</div></div>
-            <i class="ti ti-chevron-right" style="margin-left:auto;color:var(--muted);"></i>
-          </div>
+  <!-- HOME -->
+  <div class="screen active" id="sc-home">
+    <div class="pp">
+      <div class="card-teal">
+        <div style="font-size:18px;font-weight:900" id="greet">Halo 👋</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px" id="greet-sub">-</div>
+        <div style="margin-top:10px;background:rgba(255,255,255,0.15);border-radius:10px;padding:10px">
+          <div style="font-size:10px;color:rgba(255,255,255,0.7);font-weight:700;margin-bottom:3px">SESI BERIKUTNYA</div>
+          <div style="font-size:14px;font-weight:800;color:white" id="next-sesi">-</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.8);margin-top:2px" id="next-date">-</div>
         </div>
       </div>
+      <div class="stat2">
+        <div class="sbox"><div class="sv" id="st-hadir">-</div><div class="sl">Kehadiran</div></div>
+        <div class="sbox"><div class="sv" id="st-rank">-</div><div class="sl">Ranking</div></div>
+      </div>
+      <div class="sec">Notifikasi Terbaru</div>
+      <div id="home-notif"></div>
     </div>
+  </div>
 
-    <!-- ══ LEADERBOARD ══ -->
-    <div class="screen screen-fade" id="screen-leaderboard">
-      <div class="page-pad">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-          <button class="topbar-back" style="background:#f0f0f0;color:var(--gray);" onclick="showScreen('lainnya')"><i class="ti ti-arrow-left"></i></button>
-          <div class="sec-head" style="margin:0;">Leaderboard</div>
+  <!-- SESI -->
+  <div class="screen" id="sc-sesi">
+    <div class="pp">
+      <div class="sec">Sesi & Absensi</div>
+      <div id="sesi-list"></div>
+    </div>
+  </div>
+
+  <!-- KUIS LIST -->
+  <div class="screen" id="sc-kuis">
+    <div class="pp">
+      <div class="sec">Kuis per Sesi</div>
+      <div id="kuis-list"></div>
+    </div>
+  </div>
+
+  <!-- HASIL KUIS -->
+  <div class="screen" id="sc-hasil">
+    <div class="pp">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <button onclick="goScreen('kuis')" style="background:#f0f0f0;border:none;color:var(--gray);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px"><i class="ti ti-arrow-left"></i></button>
+        <div class="sec" style="margin:0">Hasil Kuis</div>
+      </div>
+      <div class="card" style="text-align:center;padding:24px 16px">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:12px" id="hasil-title">-</div>
+        <div class="sc-circle">
+          <div class="sc-num" id="hasil-score">-</div>
+          <div style="font-size:10px;color:var(--teal-dark);font-weight:700">Nilai</div>
         </div>
-        <div id="lbList"><div class="skeleton" style="height:60px;margin-bottom:8px;"></div><div class="skeleton" style="height:60px;margin-bottom:8px;"></div><div class="skeleton" style="height:60px;"></div></div>
+        <div id="hasil-status" style="margin-bottom:6px"></div>
+        <div style="font-size:13px;color:var(--muted)" id="hasil-info">-</div>
+      </div>
+      <div class="sec">Review Jawaban</div>
+      <div id="hasil-review"></div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="screen" id="sc-lb">
+    <div class="pp">
+      <div class="sec">🏆 Leaderboard</div>
+      <div id="lb-list"></div>
+    </div>
+  </div>
+
+  <!-- LAINNYA -->
+  <div class="screen" id="sc-lainnya">
+    <div class="pp">
+      <div class="sec" style="margin-bottom:12px">Menu Lainnya</div>
+      <div class="card" style="cursor:pointer" onclick="goScreen('lb')">
+        <div style="display:flex;align-items:center;gap:12px">
+          <i class="ti ti-trophy" style="font-size:24px;color:var(--teal)"></i>
+          <div><div style="font-size:14px;font-weight:700;color:var(--gray)">Leaderboard</div><div style="font-size:12px;color:var(--muted)">Ranking peserta</div></div>
+          <i class="ti ti-chevron-right" style="margin-left:auto;color:var(--muted)"></i>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer" onclick="goScreen('notif')">
+        <div style="display:flex;align-items:center;gap:12px">
+          <i class="ti ti-bell" style="font-size:24px;color:var(--teal)"></i>
+          <div><div style="font-size:14px;font-weight:700;color:var(--gray)">Notifikasi</div><div style="font-size:12px;color:var(--muted)">Pesan dari admin</div></div>
+          <i class="ti ti-chevron-right" style="margin-left:auto;color:var(--muted)"></i>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer" onclick="goScreen('profil')">
+        <div style="display:flex;align-items:center;gap:12px">
+          <i class="ti ti-user" style="font-size:24px;color:var(--teal)"></i>
+          <div><div style="font-size:14px;font-weight:700;color:var(--gray)">Profil Saya</div><div style="font-size:12px;color:var(--muted)">Data diri & ganti password</div></div>
+          <i class="ti ti-chevron-right" style="margin-left:auto;color:var(--muted)"></i>
+        </div>
       </div>
     </div>
+  </div>
 
-    <!-- ══ GALLERY ══ -->
-    <div class="screen screen-fade" id="screen-gallery">
-      <div class="page-pad">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-          <button class="topbar-back" style="background:#f0f0f0;color:var(--gray);" onclick="showScreen('lainnya')"><i class="ti ti-arrow-left"></i></button>
-          <div class="sec-head" style="margin:0;">Gallery Foto</div>
-        </div>
-        <div class="gtabs" id="galleryTabs"></div>
-        <div class="ggrid" id="galleryGrid"></div>
-        <label class="upload-zone">
-          <input type="file" accept="image/*" id="galleryUpload" onchange="uploadPhoto(this)">
-          <i class="ti ti-upload" style="font-size:18px;"></i>
-          Upload Foto Baru
-        </label>
-      </div>
+  <!-- NOTIF -->
+  <div class="screen" id="sc-notif">
+    <div class="pp">
+      <div class="sec">Notifikasi</div>
+      <div id="notif-list"></div>
     </div>
+  </div>
 
-    <!-- ══ NOTIFIKASI ══ -->
-    <div class="screen screen-fade" id="screen-notif">
-      <div class="page-pad">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-          <button class="topbar-back" style="background:#f0f0f0;color:var(--gray);" onclick="showScreen('lainnya')"><i class="ti ti-arrow-left"></i></button>
-          <div class="sec-head" style="margin:0;">Notifikasi</div>
-        </div>
-        <div id="notifList"></div>
+  <!-- PROFIL -->
+  <div class="screen" id="sc-profil">
+    <div class="pp">
+      <div class="ph">
+        <div class="av-lg" id="pr-av">-</div>
+        <div style="font-size:18px;font-weight:900;color:var(--gray)" id="pr-name">-</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px" id="pr-asp">-</div>
+        <div id="pr-cert" style="margin-top:8px;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;display:inline-block;background:var(--amber-lt);color:#854F0B"><i class="ti ti-award" style="font-size:12px"></i> Memuat...</div>
       </div>
-    </div>
-
-    <!-- ══ PROFIL ══ -->
-    <div class="screen screen-fade" id="screen-profil">
-      <div class="page-pad">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-          <button class="topbar-back" style="background:#f0f0f0;color:var(--gray);" onclick="showScreen('lainnya')"><i class="ti ti-arrow-left"></i></button>
-          <div class="sec-head" style="margin:0;">Profil Saya</div>
-        </div>
-        <div class="profile-hero">
-          <div class="avatar-lg" id="profilAvatar">-</div>
-          <div class="pname" id="profilName">-</div>
-          <div class="pasp" id="profilAsp">-</div>
-          <div class="cert-pill cert-pending" id="certStatus"><i class="ti ti-award" style="font-size:14px;"></i>Memuat...</div>
-        </div>
-        <div class="card">
-          <div class="prow"><i class="ti ti-building-church"></i><div><div class="plbl">Gereja</div><div class="pval" id="profilChurch">-</div></div></div>
-          <div class="prow"><i class="ti ti-phone"></i><div><div class="plbl">No. Kontak</div><div class="pval" id="profilPhone">-</div></div></div>
-          <div class="prow" style="border:none;"><i class="ti ti-map-pin"></i><div><div class="plbl">Kota</div><div class="pval" id="profilCity">-</div></div></div>
-        </div>
-        <button class="btn-outline" onclick="showPwModal()">🔑 Ganti Password</button>
-        <button class="btn-danger-outline" onclick="logout()">Logout</button>
+      <div class="card">
+        <div class="prow"><i class="ti ti-building-church"></i><div><div class="plbl">Gereja</div><div class="pval" id="pr-church">-</div></div></div>
+        <div class="prow"><i class="ti ti-phone"></i><div><div class="plbl">No. Kontak</div><div class="pval" id="pr-phone">-</div></div></div>
+        <div class="prow" style="border:none"><i class="ti ti-map-pin"></i><div><div class="plbl">Kota</div><div class="pval" id="pr-city">-</div></div></div>
       </div>
+      <button class="btn-out" onclick="showPwModal()">🔑 Ganti Password</button>
+      <button class="btn-danger" onclick="doLogout()">Logout</button>
     </div>
+  </div>
 
-    <!-- ══ HASIL KUIS ══ -->
-    <div class="screen screen-fade" id="screen-hasil">
-      <div class="page-pad">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-          <button class="topbar-back" style="background:#f0f0f0;color:var(--gray);" onclick="showScreen('kuis')"><i class="ti ti-arrow-left"></i></button>
-          <div class="sec-head" style="margin:0;">Hasil Kuis</div>
-        </div>
-        <div class="card" style="text-align:center;padding:24px 16px;">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:12px;" id="hasilSesiTitle">-</div>
-          <div class="score-circle">
-            <div class="score-num" id="hasilScore">-</div>
-            <div class="score-lbl">Nilai</div>
-          </div>
-          <div id="hasilStatus" style="margin-bottom:4px;"></div>
-          <div style="font-size:13px;color:var(--muted);" id="hasilCorrect">-</div>
-        </div>
-        <div class="sec-head">Review Jawaban</div>
-        <div id="hasilReview"></div>
-        <button class="btn-outline" style="margin-top:8px;" onclick="showScreen('leaderboard')">🏆 Lihat Leaderboard</button>
-      </div>
-    </div>
+</div><!-- end content -->
 
-  </div><!-- end content -->
-
-  <!-- BOTTOM NAV -->
-  <nav class="bnav" id="bnav" style="display:none;">
-    <button class="bnav-item active" data-screen="home" onclick="showScreen('home')"><i class="ti ti-home"></i>Home</button>
-    <button class="bnav-item" data-screen="sesi" onclick="showScreen('sesi')"><i class="ti ti-calendar"></i>Sesi</button>
-    <button class="bnav-item" data-screen="kuis" onclick="showScreen('kuis')"><i class="ti ti-pencil"></i>Kuis</button>
-    <button class="bnav-item" data-screen="lainnya" onclick="showScreen('lainnya')"><i class="ti ti-dots"></i>Lainnya</button>
-  </nav>
-
+<!-- BNAV -->
+<nav class="bnav" id="bnav" style="display:none">
+  <button class="bi active" data-sc="home" onclick="goScreen('home')"><i class="ti ti-home"></i>Home</button>
+  <button class="bi" data-sc="sesi" onclick="goScreen('sesi')"><i class="ti ti-calendar"></i>Sesi</button>
+  <button class="bi" data-sc="kuis" onclick="goScreen('kuis')"><i class="ti ti-pencil"></i>Kuis</button>
+  <button class="bi" data-sc="lainnya" onclick="goScreen('lainnya')"><i class="ti ti-dots"></i>Lainnya</button>
+</nav>
 </div><!-- end app -->
 
-<!-- ══ QUIZ PLAY OVERLAY ══ -->
-<div class="quiz-play" id="quizPlay">
-  <div class="quiz-header">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <button onclick="closeQuiz()" style="background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;"><i class="ti ti-x"></i></button>
-      <div style="text-align:center;">
-        <div style="font-size:13px;font-weight:800;color:white;" id="qTitle">Kuis</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.75);" id="qCounter">0 / 0</div>
+<!-- QUIZ PLAY -->
+<div class="quiz-play" id="quiz-play">
+  <div class="qh">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <button onclick="closeQuiz()" style="background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px"><i class="ti ti-x"></i></button>
+      <div style="text-align:center">
+        <div style="font-size:13px;font-weight:800;color:white" id="q-title">Kuis</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.75)" id="q-counter">0/0</div>
       </div>
-      <div style="width:32px;"></div>
+      <div style="width:32px"></div>
     </div>
-    <div class="quiz-prog-bar"><div class="quiz-prog-fill" id="qProgFill" style="width:0%;"></div></div>
+    <div class="qpb"><div class="qpf" id="q-prog"></div></div>
   </div>
-  <div class="quiz-body">
-    <div class="qdots" id="qDots"></div>
-    <div class="qtext" id="qText"></div>
-    <div id="qOpts"></div>
+  <div class="qbody">
+    <div class="qdots" id="q-dots"></div>
+    <div class="qtext" id="q-text"></div>
+    <div id="q-opts"></div>
   </div>
-  <div class="quiz-footer">
+  <div class="qfoot">
     <button class="btn-prev" onclick="prevQ()">← Sebelumnya</button>
-    <button class="btn-next" id="btnNext" onclick="nextQ()">Berikutnya →</button>
+    <button class="btn-next" id="btn-next" onclick="nextQ()">Berikutnya →</button>
   </div>
 </div>
 
-<!-- ══ KONFIRMASI SUBMIT ══ -->
-<div class="modal-overlay" id="confirmModal">
-  <div class="modal-box">
-    <div class="modal-title">⚠️ Konfirmasi Submit Kuis</div>
-    <div class="modal-text" id="confirmText">Anda sudah menjawab semua soal. Kuis hanya bisa dikerjakan SEKALI. Yakin ingin submit?</div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeConfirm()">Cek Ulang</button>
-      <button class="btn-confirm" onclick="submitQuiz()">Ya, Submit</button>
+<!-- KONFIRMASI SUBMIT -->
+<div class="modal" id="m-confirm">
+  <div class="mbox">
+    <div class="m-title">⚠️ Konfirmasi Submit</div>
+    <div class="m-text" id="confirm-text">Kuis hanya bisa dikerjakan sekali. Yakin ingin submit?</div>
+    <div class="m-btns">
+      <button class="m-cancel" onclick="closeModal('m-confirm')">Cek Ulang</button>
+      <button class="m-ok" onclick="submitQuiz()">Ya, Submit</button>
     </div>
   </div>
 </div>
 
-<!-- ══ GANTI PASSWORD ══ -->
-<div class="pw-modal" id="pwModal">
+<!-- GANTI PASSWORD -->
+<div class="pw-modal" id="pw-modal">
   <div class="pw-box">
-    <div class="modal-title" style="margin-bottom:16px;">🔑 Ganti Password</div>
-    <div class="pw-field"><label>Password Lama</label><input type="password" id="pwOld" placeholder="Masukkan password lama"></div>
-    <div class="pw-field"><label>Password Baru</label><input type="password" id="pwNew" placeholder="Minimal 8 karakter"></div>
-    <div class="pw-field"><label>Konfirmasi Password Baru</label><input type="password" id="pwConfirm" placeholder="Ulangi password baru"></div>
-    <div class="modal-btns" style="margin-top:4px;">
-      <button class="btn-cancel" onclick="closePwModal()">Batal</button>
-      <button class="btn-confirm" onclick="changePassword()">Simpan</button>
+    <div class="m-title" style="margin-bottom:16px">🔑 Ganti Password</div>
+    <div class="pw-field"><label>Password Lama</label><input type="password" id="pw-old" placeholder="Password lama"></div>
+    <div class="pw-field"><label>Password Baru</label><input type="password" id="pw-new" placeholder="Min. 8 karakter"></div>
+    <div class="pw-field"><label>Konfirmasi</label><input type="password" id="pw-conf" placeholder="Ulangi password baru"></div>
+    <div class="m-btns" style="margin-top:4px">
+      <button class="m-cancel" onclick="closePwModal()">Batal</button>
+      <button class="m-ok" onclick="changePw()">Simpan</button>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════════
-const SUPABASE_URL  = 'https://zpewvsezyhsjqemwuoag.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwZXd2c2V6eWhzanFlbXd1b2FnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjU4MDYsImV4cCI6MjA5NTMwMTgwNn0.78C0QBfWOnink16LfiFjRY2aXcX9Nsj0IrPT57yagfo';
+const SB_URL = 'SUPABASE_URL_HERE';
+const SB_KEY = 'SUPABASE_ANON_KEY_HERE';
+const H = {'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json','Accept':'application/json'};
 
-// ══════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════
-let STATE = {
-  user: null, member: null, asp: null,
-  sessions: [], quizzes: [], attempts: {},
-  leaderboard: [], notifications: [], gallery: {},
-  currentScreen: 'home',
-  // Quiz play state
-  quiz: null, questions: [], answers: {}, currentQ: 0, quizId: null
-};
-
-// ══════════════════════════════════════════
-// SUPABASE HELPER
-// ══════════════════════════════════════════
-async function sb(path, opts = {}) {
-  const token = localStorage.getItem('asp_token') || SUPABASE_ANON;
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-      headers: {
-        'apikey': SUPABASE_ANON,
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...opts.headers
-      },
-      ...opts
-    });
-    const data = res.status === 204 ? null : await res.json();
-    return { ok: res.ok, status: res.status, data };
-  } catch(e) {
-    return { ok: false, error: e.message };
-  }
+async function GET(path){
+  try{const r=await fetch(`${SB_URL}/rest/v1/${path}`,{headers:H});return{ok:r.ok,data:r.status===204?null:await r.json()};}
+  catch(e){return{ok:false,data:null};}
+}
+async function POST(path,body,prefer='return=minimal'){
+  try{const r=await fetch(`${SB_URL}/rest/v1/${path}`,{method:'POST',headers:{...H,'Prefer':prefer},body:JSON.stringify(body)});return{ok:r.ok,data:r.status===204?null:await r.json()};}
+  catch(e){return{ok:false,data:null};}
+}
+async function RPC(fn,body){
+  try{const r=await fetch(`${SB_URL}/rest/v1/rpc/${fn}`,{method:'POST',headers:H,body:JSON.stringify(body)});return{ok:r.ok,data:r.status===204?null:await r.json()};}
+  catch(e){return{ok:false,data:null};}
 }
 
-async function sbRpc(fn, body = {}) {
-  return sb(`rpc/${fn}`, { method: 'POST', body: JSON.stringify(body) });
-}
+let S={user:null,member:null,asp:null,sessions:[],quizzes:[],attempts:{},notifs:[],lb:[],
+  quiz:null,questions:[],answers:{},curQ:0,quizId:null,hasilQuizId:null};
 
-// ══════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════
-window.addEventListener('DOMContentLoaded', async () => {
-  // Cek session
-  try { STATE.user = JSON.parse(localStorage.getItem('asp_user')); } catch(e) {}
-  if (!STATE.user) { window.location.href = 'login.html'; return; }
-  if (STATE.user.role === 'admin') { window.location.href = 'admin.html'; return; }
-
-  // Load semua data
+window.addEventListener('DOMContentLoaded',async()=>{
+  try{S.user=JSON.parse(localStorage.getItem('asp_user'));}catch(e){}
+  if(!S.user){location.href='login.html';return;}
+  if(S.user.role==='admin'){location.href='admin.html';return;}
+  const init=S.user.full_name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+  document.getElementById('av-btn').textContent=init;
+  document.getElementById('pr-av').textContent=init;
   await loadAll();
-
-  // Show UI
-  document.getElementById('loadingScreen').style.display = 'none';
-  document.getElementById('topbar').style.display = 'flex';
-  document.getElementById('content').style.display = 'block';
-  document.getElementById('bnav').style.display = 'flex';
-
-  // Set avatar
-  const initials = STATE.user.full_name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-  document.getElementById('avatarBtn').textContent = initials;
-  document.getElementById('profilAvatar').textContent = initials;
+  document.getElementById('ls').style.display='none';
+  document.getElementById('tb').style.display='flex';
+  document.getElementById('content').style.display='block';
+  document.getElementById('bnav').style.display='flex';
 });
 
-async function loadAll() {
-  const uid = STATE.user.id;
-
-  // Load member & ASP info
-  const { data: members } = await sb(`asp_members?user_id=eq.${uid}&select=*,asp_programs(*)`);
-  if (members && members.length > 0) {
-    STATE.member = members[0];
-    STATE.asp = members[0].asp_programs;
+async function loadAll(){
+  const uid=S.user.id;
+  const{data:members}=await GET(`asp_members?user_id=eq.${uid}&select=*,asp_programs(*)`);
+  if(members&&members.length>0){
+    S.member=members[0];
+    S.asp=members[0].asp_programs;
   }
-
-  if (!STATE.asp) return;
-  const aspId = STATE.asp.id;
-
-  // Parallel load
-  const [sessRes, quizRes, attRes, lbRes, notifRes] = await Promise.all([
-    sb(`sessions?asp_id=eq.${aspId}&order=session_number.asc`),
-    sb(`quizzes?asp_id=eq.${aspId}&select=*,sessions(session_number,title)`),
-    sb(`attendance?user_id=eq.${uid}&asp_id=eq.${aspId}`),
-    sb(`v_leaderboard?asp_id=eq.${aspId}&order=rank_in_asp.asc&limit=20`),
-    sb(`notifications?or=(target.eq.all,and(target.eq.asp,asp_id.eq.${aspId}))&order=created_at.desc&limit=20`)
+  if(!S.asp)return;
+  const aspId=S.asp.id;
+  const[{data:sess},{data:quizzes},{data:att},{data:attempts},{data:notifs},{data:lbData}]=await Promise.all([
+    GET(`sessions?asp_id=eq.${aspId}&order=session_number.asc`),
+    GET(`quizzes?asp_id=eq.${aspId}&select=*,sessions(session_number,title)`),
+    GET(`attendance?user_id=eq.${uid}&asp_id=eq.${aspId}`),
+    GET(`quiz_attempts?user_id=eq.${uid}&asp_id=eq.${aspId}`),
+    GET(`notifications?or=(target.eq.all,and(target.eq.asp,asp_id.eq.${aspId}))&order=created_at.desc&limit=20`),
+    GET(`quiz_attempts?asp_id=eq.${aspId}&select=user_id,score,users(full_name)`)
   ]);
-
-  STATE.sessions     = sessRes.data || [];
-  STATE.quizzes      = quizRes.data || [];
-  STATE.attendance   = attRes.data  || [];
-  STATE.leaderboard  = lbRes.data   || [];
-  STATE.notifications= notifRes.data|| [];
-
-  // Load attempts
-  if (STATE.quizzes.length > 0) {
-    const qIds = STATE.quizzes.map(q=>q.id).join(',');
-    const { data: attempts } = await sb(`quiz_attempts?user_id=eq.${uid}&quiz_id=in.(${qIds})`);
-    (attempts||[]).forEach(a => { STATE.attempts[a.quiz_id] = a; });
-  }
-
-  // Render semua
-  renderHome();
-  renderSesi();
-  renderKuis();
-  renderLeaderboard();
-  renderNotifikasi();
-  renderProfil();
-  renderGalleryTabs();
-}
-
-// ══════════════════════════════════════════
-// RENDER: HOME
-// ══════════════════════════════════════════
-function renderHome() {
-  const u = STATE.user;
-  const asp = STATE.asp;
-
-  // Greeting
-  document.getElementById('greetName').textContent = `Halo, ${u.full_name.split(' ')[0]} 👋`;
-  document.getElementById('greetSub').textContent = asp ? `${asp.name}` : 'Belum terdaftar di ASP';
-  document.getElementById('topbarSub').textContent = asp ? asp.name : 'Program ASP';
-
-  // Next sesi
-  const nextSesi = STATE.sessions.find(s => s.is_active) ||
-                   STATE.sessions.find(s => !s.is_active && s.scheduled_date);
-  if (nextSesi) {
-    document.getElementById('nextSesiTitle').textContent = `Sesi ${nextSesi.session_number} — ${nextSesi.title}`;
-    document.getElementById('nextSesiDate').textContent = nextSesi.scheduled_date
-      ? formatDate(nextSesi.scheduled_date) : 'Belum dijadwalkan';
-  } else {
-    document.getElementById('nextSesiTitle').textContent = 'Semua sesi selesai';
-    document.getElementById('nextSesiDate').textContent = 'Program ASP selesai';
-  }
-
-  // Stats
-  const hadir = STATE.attendance.filter(a => a.is_present).length;
-  document.getElementById('statHadir').textContent = `${hadir}/6`;
-
-  const myLb = STATE.leaderboard.find(l => l.user_id === STATE.user.id);
-  document.getElementById('statRank').textContent = myLb ? `#${myLb.rank_in_asp}` : '-';
-
-  // Notif preview
-  const unread = STATE.notifications.slice(0,2);
-  const homeNotifList = document.getElementById('homeNotifList');
-  if (unread.length === 0) {
-    homeNotifList.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);font-size:13px;padding:16px;">Belum ada notifikasi</div>`;
-  } else {
-    homeNotifList.innerHTML = unread.map(n => `
-      <div class="notif-item unread card" style="margin-bottom:8px;">
-        <div class="notif-dot"></div>
-        <div>
-          <div class="notif-title">${n.title}</div>
-          <div class="notif-msg">${n.message}</div>
-          <div class="notif-time">${timeAgo(n.created_at)}</div>
-        </div>
-      </div>`).join('');
-  }
-
-  // Notif badge
+  S.sessions=sess||[];
+  S.quizzes=quizzes||[];
+  S.attendance=att||[];
+  (attempts||[]).forEach(a=>{S.attempts[a.quiz_id]=a;});
+  S.notifs=notifs||[];
+  S.lbData=lbData||[];
+  renderHome();renderSesi();renderKuis();renderLB();renderNotif();renderProfil();
   updateNotifBadge();
 }
 
-// ══════════════════════════════════════════
-// RENDER: SESI
-// ══════════════════════════════════════════
-function renderSesi() {
-  const list = document.getElementById('sesiList');
-  if (STATE.sessions.length === 0) {
-    list.innerHTML = `<div class="empty-state"><i class="ti ti-calendar-off"></i><p>Belum ada sesi</p></div>`;
-    return;
-  }
-  list.innerHTML = STATE.sessions.map(s => {
-    const att = STATE.attendance.find(a => a.session_id === s.id);
-    const hadir = att && att.is_present;
-    let dotClass = 'dot-lock', badgeClass = 'b-lock', badgeText = '🔒 Terkunci';
-    if (s.is_active) { dotClass = 'dot-open'; badgeClass = 'b-open'; badgeText = 'Aktif'; }
-    else if (att) { dotClass = 'dot-done'; badgeClass = 'b-done'; badgeText = hadir ? '✓ Hadir' : '✗ Tidak Hadir'; }
-    return `
-      <div class="sesi-item ${s.is_active ? 'active-sesi' : ''}">
-        <div class="sdot ${dotClass}"></div>
-        <div class="sinfo">
-          <div class="stitle">Sesi ${s.session_number} — ${s.title}</div>
-          <div class="sdate">${s.scheduled_date ? formatDate(s.scheduled_date) : 'Belum dijadwalkan'}</div>
-        </div>
-        <div class="sbadge ${badgeClass}">${badgeText}</div>
-      </div>`;
-  }).join('');
+function renderHome(){
+  const u=S.user;const asp=S.asp;
+  document.getElementById('greet').textContent=`Halo, ${u.full_name.split(' ')[0]} 👋`;
+  document.getElementById('greet-sub').textContent=asp?asp.name:'Belum terdaftar di ASP';
+  document.getElementById('tb-sub').textContent=asp?asp.name:'Program ASP';
+  const next=S.sessions.find(s=>s.is_active)||S.sessions.find(s=>!s.is_active&&s.scheduled_date);
+  document.getElementById('next-sesi').textContent=next?`Sesi ${next.session_number} — ${next.title}`:'Semua sesi selesai';
+  document.getElementById('next-date').textContent=next&&next.scheduled_date?fmtDate(next.scheduled_date):'';
+  const hadir=(S.attendance||[]).filter(a=>a.is_present).length;
+  document.getElementById('st-hadir').textContent=`${hadir}/6`;
+  const scores={};(S.lbData||[]).forEach(a=>{if(!scores[a.user_id])scores[a.user_id]=0;scores[a.user_id]+=a.score;});
+  const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const rank=sorted.findIndex(([uid])=>uid===S.user.id);
+  document.getElementById('st-rank').textContent=rank>=0?`#${rank+1}`:'-';
+  const hn=document.getElementById('home-notif');
+  if(!S.notifs.length){hn.innerHTML='<div class="card" style="text-align:center;color:var(--muted);font-size:13px;padding:16px">Belum ada notifikasi</div>';return;}
+  hn.innerHTML=S.notifs.slice(0,2).map(n=>`
+    <div class="ni unread card" style="margin-bottom:8px">
+      <div class="ndot"></div>
+      <div><div style="font-size:13px;font-weight:700;color:var(--gray)">${n.title}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">${n.message}</div></div>
+    </div>`).join('');
 }
 
-// ══════════════════════════════════════════
-// RENDER: KUIS
-// ══════════════════════════════════════════
-function renderKuis() {
-  const list = document.getElementById('kuisList');
-  if (STATE.quizzes.length === 0) {
-    list.innerHTML = `<div class="empty-state"><i class="ti ti-pencil-off"></i><p>Belum ada kuis</p></div>`;
-    return;
-  }
-  list.innerHTML = STATE.quizzes.map(q => {
-    const attempt = STATE.attempts[q.id];
-    const sesi = q.sessions;
-    let statusHtml = '';
-    if (attempt) {
-      const lulus = attempt.is_passed;
-      statusHtml = `
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
-          <div>
-            <span style="font-size:16px;font-weight:900;color:var(--teal);">${attempt.score}</span>
-            <span style="font-size:11px;color:var(--muted);"> / 100 · </span>
-            <span style="font-size:11px;font-weight:700;color:${lulus?'#0F6E56':'#A32D2D'};">${lulus?'✓ Lulus':'✗ Tidak Lulus'}</span>
-          </div>
-          <button class="btn-review" onclick="showHasil('${q.id}')">Review</button>
-        </div>`;
-    } else if (q.is_active) {
-      statusHtml = `
-        <div style="margin-top:10px;">
-          <button class="btn-kerjakan" onclick="startQuiz('${q.id}')">Kerjakan Kuis →</button>
-        </div>`;
-    } else {
-      statusHtml = `<div style="margin-top:8px;font-size:12px;color:var(--muted);">🔒 Kuis belum dibuka admin</div>`;
-    }
-    return `
-      <div class="kuis-card">
-        <div style="font-size:13px;font-weight:800;color:var(--gray);">Sesi ${sesi?.session_number||'?'} — ${sesi?.title||q.title}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px;">${q.title}</div>
-        ${statusHtml}
-      </div>`;
-  }).join('');
+function renderSesi(){
+  const el=document.getElementById('sesi-list');
+  el.innerHTML=S.sessions.map(s=>{
+    const att=(S.attendance||[]).find(a=>a.session_id===s.id);
+    const hadir=att&&att.is_present;
+    let dc='dot-lock',bc='b-lock',bt='🔒 Terkunci';
+    if(s.is_active){dc='dot-open';bc='b-open';bt='Aktif';}
+    else if(att){dc='dot-done';bc='b-done';bt=hadir?'✓ Hadir':'✗ Tidak Hadir';}
+    return`<div class="sesi-item ${s.is_active?'open':''}">
+      <div class="sdot ${dc}"></div>
+      <div class="si"><div class="st">Sesi ${s.session_number} — ${s.title}</div>
+      <div class="sd">${s.scheduled_date?fmtDate(s.scheduled_date):'Belum dijadwalkan'}</div></div>
+      <div class="sbadge ${bc}">${bt}</div>
+    </div>`;
+  }).join('')||'<div class="empty">Belum ada sesi</div>';
 }
 
-// ══════════════════════════════════════════
-// RENDER: LEADERBOARD
-// ══════════════════════════════════════════
-function renderLeaderboard() {
-  const list = document.getElementById('lbList');
-  if (STATE.leaderboard.length === 0) {
-    list.innerHTML = `<div class="empty-state"><i class="ti ti-trophy-off"></i><p>Belum ada data</p></div>`;
-    return;
-  }
-  const medals = ['🥇','🥈','🥉'];
-  const myId = STATE.user.id;
-  let html = '';
-  let myRankShown = false;
-  STATE.leaderboard.forEach((lb, i) => {
-    const isMe = lb.user_id === myId;
-    const rankLabel = i < 3 ? medals[i] : `${lb.rank_in_asp}`;
-    const cls = i === 0 ? 'g1' : i === 1 ? 'g2' : i === 2 ? 'g3' : isMe ? 'me' : '';
-    if (isMe) myRankShown = true;
-    html += `
-      <div class="lb-item ${cls}">
-        <div class="lrank">${rankLabel}</div>
-        <div class="linfo">
-          <div class="lname">${lb.full_name}${isMe?' ★':''}</div>
-          <div class="lchurch">${lb.church}</div>
-        </div>
-        <div class="lscore">${Math.round(lb.total_score)}</div>
+function renderKuis(){
+  const el=document.getElementById('kuis-list');
+  el.innerHTML=S.quizzes.map(q=>{
+    const attempt=S.attempts[q.id];
+    const sesi=q.sessions;
+    let actions='';
+    if(attempt){
+      const lulus=attempt.is_passed;
+      actions=`<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
+        <div><span style="font-size:18px;font-weight:900;color:var(--teal)">${Math.round(attempt.score)}</span>
+        <span style="font-size:12px;color:var(--muted)">/100 · </span>
+        <span style="font-size:12px;font-weight:700;color:${lulus?'#0F6E56':'#A32D2D'}">${lulus?'✓ Lulus':'✗ Tidak Lulus'}</span></div>
+        <button class="btn-k btn-rv" onclick="showHasil('${q.id}')">Review</button>
       </div>`;
-    if (i === 2 && STATE.leaderboard.length > 3) {
-      html += `<div class="lb-divider">• • •</div>`;
+    }else if(q.is_active){
+      actions=`<div style="margin-top:10px"><button class="btn-k btn-do" onclick="startQuiz('${q.id}')">Kerjakan Kuis →</button></div>`;
+    }else{
+      actions=`<div style="margin-top:8px;font-size:12px;color:var(--muted)">🔒 Kuis belum dibuka admin</div>`;
     }
+    return`<div class="kcard">
+      <div style="font-size:13px;font-weight:800;color:var(--gray)">Sesi ${sesi?.session_number||'?'} — ${sesi?.title||q.title}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">${q.title}</div>
+      ${actions}
+    </div>`;
+  }).join('')||'<div class="empty">Belum ada kuis</div>';
+}
+
+function renderLB(){
+  const scores={};
+  (S.lbData||[]).forEach(a=>{if(!scores[a.user_id])scores[a.user_id]={name:a.users?.full_name||'-',total:0};scores[a.user_id].total+=a.score;});
+  const sorted=Object.entries(scores).sort((a,b)=>b[1].total-a[1].total);
+  const medals=['🥇','🥈','🥉'];
+  const el=document.getElementById('lb-list');
+  if(!sorted.length){el.innerHTML='<div class="empty">Belum ada data</div>';return;}
+  let html='';let myShown=false;
+  sorted.forEach(([uid,d],i)=>{
+    const isMe=uid===S.user.id;
+    if(isMe)myShown=true;
+    const cls=i===0?'g1':i===1?'g2':i===2?'g3':isMe?'me':'';
+    html+=`<div class="lb ${cls}"><div class="lr">${i<3?medals[i]:i+1}</div>
+      <div class="li"><div class="ln">${d.name}${isMe?' ★':''}</div></div>
+      <div class="ls">${Math.round(d.total)}</div></div>`;
+    if(i===2&&sorted.length>3)html+=`<div style="text-align:center;font-size:12px;color:var(--muted);margin:4px 0">• • •</div>`;
   });
-  // Jika posisi saya tidak masuk top 3, tampilkan terpisah di bawah
-  if (!myRankShown) {
-    const me = STATE.leaderboard.find(l => l.user_id === myId);
-    if (me) {
-      html += `<div class="lb-item me">
-        <div class="lrank">#${me.rank_in_asp}</div>
-        <div class="linfo"><div class="lname">${me.full_name} ★</div><div class="lchurch">${me.church}</div></div>
-        <div class="lscore">${Math.round(me.total_score)}</div>
-      </div>`;
-    }
+  if(!myShown){
+    const me=sorted.find(([uid])=>uid===S.user.id);
+    if(me){const[,d]=me;const rank=sorted.findIndex(([uid])=>uid===S.user.id);
+      html+=`<div class="lb me"><div class="lr">#${rank+1}</div>
+        <div class="li"><div class="ln">${d.name} ★</div></div>
+        <div class="ls">${Math.round(d.total)}</div></div>`;}
   }
-  list.innerHTML = html;
+  el.innerHTML=html;
 }
 
-// ══════════════════════════════════════════
-// RENDER: NOTIFIKASI
-// ══════════════════════════════════════════
-async function renderNotifikasi() {
-  const list = document.getElementById('notifList');
-  if (STATE.notifications.length === 0) {
-    list.innerHTML = `<div class="empty-state"><i class="ti ti-bell-off"></i><p>Belum ada notifikasi</p></div>`;
-    return;
-  }
-  // Load read status
-  const { data: reads } = await sb(`notification_reads?user_id=eq.${STATE.user.id}`);
-  const readIds = new Set((reads||[]).map(r => r.notification_id));
-
-  list.innerHTML = STATE.notifications.map(n => {
-    const isRead = readIds.has(n.id);
-    return `
-      <div class="notif-item ${isRead?'':'unread'}" onclick="markRead('${n.id}',this)">
-        <div class="notif-dot ${isRead?'read':''}"></div>
-        <div>
-          <div class="notif-title">${n.title}</div>
-          <div class="notif-msg">${n.message}</div>
-          <div class="notif-time">${timeAgo(n.created_at)}</div>
-        </div>
-      </div>`;
+async function renderNotif(){
+  const el=document.getElementById('notif-list');
+  if(!S.notifs.length){el.innerHTML='<div class="empty">Belum ada notifikasi</div>';return;}
+  const{data:reads}=await GET(`notification_reads?user_id=eq.${S.user.id}`);
+  const readIds=new Set((reads||[]).map(r=>r.notification_id));
+  el.innerHTML=S.notifs.map(n=>{
+    const isRead=readIds.has(n.id);
+    return`<div class="ni ${isRead?'':'unread'}" onclick="markRead('${n.id}',this)">
+      <div class="ndot ${isRead?'read':''}"></div>
+      <div><div style="font-size:13px;font-weight:700;color:var(--gray)">${n.title}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">${n.message}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px">${timeAgo(n.created_at)}</div></div>
+    </div>`;
   }).join('');
+}
 
+async function markRead(notifId,el){
+  await POST('notification_reads',{notification_id:notifId,user_id:S.user.id},'return=minimal,resolution=ignore-duplicates');
+  el.classList.remove('unread');el.querySelector('.ndot').classList.add('read');
   updateNotifBadge();
 }
 
-async function markRead(notifId, el) {
-  await sb('notification_reads', {
-    method: 'POST',
-    headers: { 'Prefer': 'return=minimal,resolution=ignore-duplicates' },
-    body: JSON.stringify({ notification_id: notifId, user_id: STATE.user.id })
-  });
-  el.classList.remove('unread');
-  el.querySelector('.notif-dot').classList.add('read');
-  updateNotifBadge();
+async function updateNotifBadge(){
+  const{data:reads}=await GET(`notification_reads?user_id=eq.${S.user.id}`);
+  const readIds=new Set((reads||[]).map(r=>r.notification_id));
+  const unread=S.notifs.filter(n=>!readIds.has(n.id)).length;
+  const nb=document.getElementById('nb');
+  nb.style.display=unread>0?'flex':'none';
+  nb.textContent=unread;
 }
 
-async function updateNotifBadge() {
-  const { data: reads } = await sb(`notification_reads?user_id=eq.${STATE.user.id}`);
-  const readIds = new Set((reads||[]).map(r => r.notification_id));
-  const unread = STATE.notifications.filter(n => !readIds.has(n.id)).length;
-  const badge = document.getElementById('notifBadge');
-  if (unread > 0) { badge.style.display = 'flex'; badge.textContent = unread; }
-  else { badge.style.display = 'none'; }
-}
-
-// ══════════════════════════════════════════
-// RENDER: PROFIL
-// ══════════════════════════════════════════
-async function renderProfil() {
-  const u = STATE.user;
-  const m = STATE.member;
-  const asp = STATE.asp;
-
-  document.getElementById('profilName').textContent = u.full_name;
-  document.getElementById('profilAsp').textContent = asp ? asp.name : '-';
-  document.getElementById('profilPhone').textContent = u.phone || '-';
-  document.getElementById('profilChurch').textContent = m ? m.church : '-';
-  document.getElementById('profilCity').textContent = m ? (m.city||'-') : '-';
-
-  // Cek sertifikat
-  if (asp) {
-    const { data: progress } = await sb(`v_member_progress?asp_id=eq.${asp.id}&user_id=eq.${u.id}`);
-    const p = progress && progress[0];
-    const certEl = document.getElementById('certStatus');
-    if (p && p.is_cert_eligible) {
-      certEl.className = 'cert-pill cert-eligible';
-      certEl.innerHTML = '<i class="ti ti-award" style="font-size:14px;"></i> Eligible Sertifikat';
-    } else {
-      const hadir = p ? p.sessions_attended : 0;
-      certEl.className = 'cert-pill cert-pending';
-      certEl.innerHTML = `<i class="ti ti-award" style="font-size:14px;"></i> Kehadiran ${hadir}/6`;
-    }
+async function renderProfil(){
+  const u=S.user;const m=S.member;const asp=S.asp;
+  document.getElementById('pr-name').textContent=u.full_name;
+  document.getElementById('pr-asp').textContent=asp?asp.name:'-';
+  document.getElementById('pr-phone').textContent=u.phone||'-';
+  document.getElementById('pr-church').textContent=m?m.church:'-';
+  document.getElementById('pr-city').textContent=m?m.city||'-':'-';
+  if(asp){
+    const{data:att}=await GET(`attendance?user_id=eq.${u.id}&asp_id=eq.${asp.id}&is_present=eq.true`);
+    const hadir=(att||[]).length;
+    const el=document.getElementById('pr-cert');
+    if(hadir>=6){el.style.background='var(--teal-lt)';el.style.color='#0F6E56';el.innerHTML='<i class="ti ti-award"></i> Eligible Sertifikat';}
+    else{el.innerHTML=`<i class="ti ti-award"></i> Kehadiran ${hadir}/6`;}
   }
 }
 
-// ══════════════════════════════════════════
-// RENDER: GALLERY
-// ══════════════════════════════════════════
-function renderGalleryTabs() {
-  const tabs = document.getElementById('galleryTabs');
-  if (STATE.sessions.length === 0) return;
-  tabs.innerHTML = STATE.sessions.map((s, i) => `
-    <div class="gtab ${i===0?'active':''}" onclick="loadGallery('${s.id}',this)">
-      Sesi ${s.session_number}<br><small>${s.scheduled_date?formatDateShort(s.scheduled_date):'-'}</small>
+// ── QUIZ ──
+async function startQuiz(quizId){
+  const{data:questions}=await GET(`questions?quiz_id=eq.${quizId}&order=order_number.asc`);
+  if(!questions||!questions.length){toast('Soal belum tersedia','err');return;}
+  const quiz=S.quizzes.find(q=>q.id===quizId);
+  S.quiz=quiz;S.questions=questions;S.answers={};S.curQ=0;S.quizId=quizId;
+  document.getElementById('q-title').textContent=quiz.title;
+  renderQ();
+  document.getElementById('quiz-play').classList.add('show');
+}
+
+function renderQ(){
+  const q=S.questions[S.curQ];const n=S.questions.length;const i=S.curQ;
+  document.getElementById('q-counter').textContent=`${i+1}/${n}`;
+  document.getElementById('q-prog').style.width=`${((i+1)/n)*100}%`;
+  document.getElementById('q-text').textContent=q.question_text;
+  document.getElementById('q-dots').innerHTML=S.questions.map((_,idx)=>`
+    <div class="qdot ${S.answers[S.questions[idx].id]?'ans':''} ${idx===i?'cur':''}" onclick="jumpQ(${idx})">${idx+1}</div>`).join('');
+  document.getElementById('q-opts').innerHTML=['a','b','c','d'].map((opt,oi)=>`
+    <div class="qopt ${S.answers[q.id]===opt?'sel':''}" onclick="selectOpt('${q.id}','${opt}',this)">
+      <div class="oc">${['A','B','C','D'][oi]}</div>
+      <div class="ot">${q['option_'+opt]}</div>
     </div>`).join('');
-  // Load gallery sesi pertama
-  if (STATE.sessions[0]) loadGallery(STATE.sessions[0].id, tabs.children[0]);
+  const isLast=i===n-1;
+  const btn=document.getElementById('btn-next');
+  btn.className=isLast?'btn-submit':'btn-next';
+  btn.textContent=isLast?'Submit Kuis':'Berikutnya →';
+  btn.onclick=isLast?showConfirm:nextQ;
 }
 
-async function loadGallery(sessionId, tabEl) {
-  // Update active tab
-  document.querySelectorAll('.gtab').forEach(t => t.classList.remove('active'));
-  tabEl.classList.add('active');
+function selectOpt(qId,opt,el){
+  S.answers[qId]=opt;
+  document.querySelectorAll('.qopt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');renderQ();
+}
+function jumpQ(idx){S.curQ=idx;renderQ();}
+function nextQ(){if(S.curQ<S.questions.length-1){S.curQ++;renderQ();}}
+function prevQ(){if(S.curQ>0){S.curQ--;renderQ();}}
 
-  const grid = document.getElementById('galleryGrid');
-  grid.innerHTML = `<div class="skeleton" style="aspect-ratio:1;border-radius:12px;"></div><div class="skeleton" style="aspect-ratio:1;border-radius:12px;"></div>`;
-
-  const { data: photos } = await sb(`gallery?session_id=eq.${sessionId}&is_approved=eq.true&order=uploaded_at.desc`);
-  if (!photos || photos.length === 0) {
-    grid.innerHTML = `<div style="grid-column:span 2;text-align:center;padding:30px;color:var(--muted);font-size:13px;">Belum ada foto</div>`;
-    return;
-  }
-  grid.innerHTML = photos.map(p => `
-    <div class="gthumb" onclick="viewPhoto('${p.image_url}')">
-      <img src="${p.image_url}" alt="${p.caption||'Foto'}">
-    </div>`).join('');
-  STATE.gallery[sessionId] = sessionId;
+function showConfirm(){
+  const ans=Object.keys(S.answers).length;const tot=S.questions.length;
+  document.getElementById('confirm-text').textContent=`Anda sudah menjawab ${ans} dari ${tot} soal. Kuis hanya bisa dikerjakan SEKALI. Yakin ingin submit?`;
+  document.getElementById('m-confirm').classList.add('show');
 }
 
-async function uploadPhoto(input) {
-  if (!input.files[0]) return;
-  const file = input.files[0];
-  if (file.size > 5*1024*1024) { showToast('Ukuran foto max 5MB', 'error'); return; }
-
-  showToast('Mengupload foto...', '');
-  const ext = file.name.split('.').pop();
-  const path = `gallery/${STATE.asp.id}/${Date.now()}.${ext}`;
-
-  const token = localStorage.getItem('asp_token') || SUPABASE_ANON;
-  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/gallery/${path}`, {
-    method: 'POST',
-    headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': file.type },
-    body: file
-  });
-
-  if (!res.ok) { showToast('Gagal upload foto', 'error'); return; }
-
-  const imageUrl = `${SUPABASE_URL}/storage/v1/object/public/gallery/${path}`;
-  const activeTab = document.querySelector('.gtab.active');
-  const sessionId = STATE.sessions[Array.from(document.querySelectorAll('.gtab')).indexOf(activeTab)]?.id;
-
-  await sb('gallery', {
-    method: 'POST',
-    headers: { 'Prefer': 'return=minimal' },
-    body: JSON.stringify({ asp_id: STATE.asp.id, session_id: sessionId, image_url: imageUrl, uploaded_by: STATE.user.id })
-  });
-
-  showToast('Foto berhasil diupload!', 'success');
-  if (sessionId) loadGallery(sessionId, activeTab);
-}
-
-function viewPhoto(url) {
-  window.open(url, '_blank');
-}
-
-// ══════════════════════════════════════════
-// QUIZ PLAY
-// ══════════════════════════════════════════
-async function startQuiz(quizId) {
-  // Load questions
-  const { data: questions } = await sb(`questions?quiz_id=eq.${quizId}&order=order_number.asc`);
-  if (!questions || questions.length === 0) { showToast('Soal belum tersedia', 'error'); return; }
-
-  const quiz = STATE.quizzes.find(q => q.id === quizId);
-  STATE.quiz = quiz;
-  STATE.questions = questions;
-  STATE.answers = {};
-  STATE.currentQ = 0;
-  STATE.quizId = quizId;
-
-  document.getElementById('qTitle').textContent = quiz.title;
-  renderQuestion();
-  document.getElementById('quizPlay').classList.add('show');
-}
-
-function renderQuestion() {
-  const q = STATE.questions[STATE.currentQ];
-  const n = STATE.questions.length;
-  const i = STATE.currentQ;
-
-  document.getElementById('qCounter').textContent = `${i+1} / ${n}`;
-  document.getElementById('qProgFill').style.width = `${((i+1)/n)*100}%`;
-  document.getElementById('qText').textContent = q.question_text;
-
-  // Dots
-  document.getElementById('qDots').innerHTML = STATE.questions.map((_, idx) => `
-    <div class="qdot ${STATE.answers[STATE.questions[idx].id]?'answered':''} ${idx===i?'current':''}"
-         onclick="jumpQ(${idx})">${idx+1}</div>`).join('');
-
-  // Options
-  const opts = ['a','b','c','d'];
-  const labels = ['A','B','C','D'];
-  document.getElementById('qOpts').innerHTML = opts.map((opt,oi) => `
-    <div class="qopt ${STATE.answers[q.id]===opt?'sel':''}" onclick="selectOpt('${q.id}','${opt}',this)">
-      <div class="ocircle">${labels[oi]}</div>
-      <div class="otext">${q['option_'+opt]}</div>
-    </div>`).join('');
-
-  // Next/Submit button
-  const isLast = i === n-1;
-  const btnNext = document.getElementById('btnNext');
-  btnNext.className = isLast ? 'btn-submit-quiz' : 'btn-next';
-  btnNext.textContent = isLast ? 'Submit Kuis' : 'Berikutnya →';
-  btnNext.onclick = isLast ? showConfirm : nextQ;
-}
-
-function selectOpt(qId, opt, el) {
-  STATE.answers[qId] = opt;
-  document.querySelectorAll('.qopt').forEach(o => o.classList.remove('sel'));
-  el.classList.add('sel');
-  // Update dot
-  renderQuestion();
-}
-
-function jumpQ(idx) { STATE.currentQ = idx; renderQuestion(); }
-function nextQ() { if (STATE.currentQ < STATE.questions.length-1) { STATE.currentQ++; renderQuestion(); } }
-function prevQ() { if (STATE.currentQ > 0) { STATE.currentQ--; renderQuestion(); } }
-
-function showConfirm() {
-  const answered = Object.keys(STATE.answers).length;
-  const total = STATE.questions.length;
-  document.getElementById('confirmText').textContent =
-    `Anda sudah menjawab ${answered} dari ${total} soal. Kuis hanya bisa dikerjakan SEKALI. Yakin ingin submit?`;
-  document.getElementById('confirmModal').classList.add('show');
-}
-function closeConfirm() { document.getElementById('confirmModal').classList.remove('show'); }
-
-async function submitQuiz() {
-  closeConfirm();
-  showToast('Menyimpan jawaban...', '');
-
-  const questions = STATE.questions;
-  const answers   = STATE.answers;
-  let correct = 0;
-
-  const answerRows = questions.map(q => {
-    const sel = answers[q.id] || null;
-    const isCor = sel === q.correct_answer;
-    if (isCor) correct++;
-    return { question_id: q.id, selected_answer: sel, is_correct: isCor };
-  });
-
-  const score = Math.round((correct / questions.length) * 100);
-
-  // Insert attempt
-  const { data: attempt, ok } = await sb('quiz_attempts', {
-    method: 'POST',
-    headers: { 'Prefer': 'return=representation' },
-    body: JSON.stringify({
-      quiz_id: STATE.quizId, user_id: STATE.user.id, asp_id: STATE.asp.id,
-      score,
-      total_correct: correct,
-      total_questions: questions.length,
-      submitted_at: new Date().toISOString()
-    })
-  });
-
-  if (!ok) { showToast('Gagal menyimpan. Coba lagi.', 'error'); return; }
-
-  const attemptId = attempt[0].id;
-
-  // Insert answers
-  await sb('quiz_answers', {
-    method: 'POST',
-    headers: { 'Prefer': 'return=minimal' },
-    body: JSON.stringify(answerRows.map(a => ({ ...a, attempt_id: attemptId })))
-  });
-
-  // is_passed diisi trigger DB — kalau null, hitung lokal dari passing_score ASP
-  const passingScore = STATE.asp?.passing_score ?? 70;
-  const attemptData = { ...attempt[0] };
-  if (attemptData.is_passed === null || attemptData.is_passed === undefined) {
-    attemptData.is_passed = score >= passingScore;
-  }
-  // Pastikan total_correct & total_questions tersimpan di state
-  attemptData.total_correct = correct;
-  attemptData.total_questions = questions.length;
-
-  // Update state
-  STATE.attempts[STATE.quizId] = attemptData;
-
+async function submitQuiz(){
+  closeModal('m-confirm');
+  let correct=0;
+  const ansRows=S.questions.map(q=>{const sel=S.answers[q.id]||null;const ok=sel===q.correct_answer;if(ok)correct++;return{question_id:q.id,selected_answer:sel,is_correct:ok};});
+  const score=Math.round((correct/S.questions.length)*100);
+  const{data:attempt,ok}=await POST('quiz_attempts',{quiz_id:S.quizId,user_id:S.user.id,asp_id:S.asp.id,score,total_correct:correct,total_questions:S.questions.length,is_passed:false},'return=representation');
+  if(!ok){toast('Gagal menyimpan. Coba lagi.','err');return;}
+  const attemptId=attempt[0].id;
+  await POST('quiz_answers',ansRows.map(a=>({...a,attempt_id:attemptId})),'return=minimal');
+  S.attempts[S.quizId]=attempt[0];
   closeQuiz();
-  await showHasil(STATE.quizId);
-  renderKuis();
-  renderLeaderboard();
-  renderHome();
+  await showHasil(S.quizId);
+  renderKuis();renderLB();renderHome();
 }
 
-function closeQuiz() {
-  document.getElementById('quizPlay').classList.remove('show');
-  document.getElementById('confirmModal').classList.remove('show');
+function closeQuiz(){document.getElementById('quiz-play').classList.remove('show');document.getElementById('m-confirm').classList.remove('show');}
+
+async function showHasil(quizId){
+  const attempt=S.attempts[quizId];if(!attempt)return;
+  const quiz=S.quizzes.find(q=>q.id===quizId);
+  document.getElementById('hasil-title').textContent=quiz?.sessions?.title||quiz?.title||'-';
+  document.getElementById('hasil-score').textContent=Math.round(attempt.score);
+  document.getElementById('hasil-info').textContent=`${attempt.total_correct} dari ${attempt.total_questions} soal benar`;
+  const lulus=attempt.is_passed;
+  document.getElementById('hasil-status').innerHTML=`<span style="background:${lulus?'var(--teal-lt)':'#FCE8E8'};color:${lulus?'#0F6E56':'#A32D2D'};font-size:12px;font-weight:800;padding:4px 14px;border-radius:8px">${lulus?'✓ LULUS':'✗ TIDAK LULUS'}</span>`;
+  const{data:answers}=await GET(`quiz_answers?attempt_id=eq.${attempt.id}&select=*,questions(*)`);
+  const rv=document.getElementById('hasil-review');
+  if(!answers||!answers.length){rv.innerHTML='';return;}
+  rv.innerHTML=answers.sort((a,b)=>a.questions.order_number-b.questions.order_number).map((a,i)=>`
+    <div class="rr">
+      <i class="ti ${a.is_correct?'ti-circle-check rc':'ti-circle-x rw'}"></i>
+      <div><div style="font-size:13px;color:var(--gray)">No. ${i+1} — ${a.is_correct?'Benar':'Salah'} (${(a.selected_answer||'-').toUpperCase()})</div>
+      ${!a.is_correct?`<div style="font-size:11px;color:var(--teal-dark);font-weight:700">Jawaban benar: ${a.questions.correct_answer.toUpperCase()}</div>`:''}</div>
+    </div>`).join('');
+  goScreen('hasil',false);
 }
 
-// ══════════════════════════════════════════
-// HASIL KUIS
-// ══════════════════════════════════════════
-async function showHasil(quizId) {
-  const attempt = STATE.attempts[quizId];
-  if (!attempt) return;
-  const quiz = STATE.quizzes.find(q => q.id === quizId);
+// ── PASSWORD ──
+function showPwModal(){document.getElementById('pw-modal').classList.add('show');}
+function closePwModal(){document.getElementById('pw-modal').classList.remove('show');['pw-old','pw-new','pw-conf'].forEach(id=>document.getElementById(id).value='');}
 
-  document.getElementById('hasilSesiTitle').textContent = `${quiz?.sessions?.title || quiz?.title}`;
-  document.getElementById('hasilScore').textContent = Math.round(attempt.score);
-  document.getElementById('hasilCorrect').textContent = `${attempt.total_correct} dari ${attempt.total_questions} soal benar`;
-
-  const lulus = attempt.is_passed;
-  document.getElementById('hasilStatus').innerHTML = `
-    <span style="background:${lulus?'var(--teal-light)':'#FCE8E8'};color:${lulus?'#0F6E56':'#A32D2D'};font-size:12px;font-weight:800;padding:4px 14px;border-radius:8px;">
-      ${lulus ? '✓ LULUS' : '✗ TIDAK LULUS'}
-    </span>`;
-
-  // Load review
-  const { data: answers } = await sb(`quiz_answers?attempt_id=eq.${attempt.id}&select=*,questions(*)`);
-  const review = document.getElementById('hasilReview');
-  if (!answers || answers.length === 0) { review.innerHTML = ''; }
-  else {
-    review.innerHTML = answers.sort((a,b)=>a.questions.order_number-b.questions.order_number).map((a,i) => `
-      <div class="review-row">
-        <i class="ti ${a.is_correct?'ti-circle-check ri-cor':'ti-circle-x ri-wrong'}"></i>
-        <div>
-          <div class="review-text">No. ${i+1} — ${a.is_correct?'Benar':'Salah'} (${(a.selected_answer||'-').toUpperCase()})</div>
-          ${!a.is_correct?`<div class="review-correct">Jawaban benar: ${a.questions.correct_answer.toUpperCase()}</div>`:''}
-        </div>
-      </div>`).join('');
-  }
-
-  showScreen('hasil', false);
+async function changePw(){
+  const old=document.getElementById('pw-old').value;
+  const nw=document.getElementById('pw-new').value;
+  const cf=document.getElementById('pw-conf').value;
+  if(!old||!nw||!cf){toast('Semua field wajib diisi','err');return;}
+  if(nw.length<8){toast('Password baru min. 8 karakter','err');return;}
+  if(nw!==cf){toast('Konfirmasi tidak cocok','err');return;}
+  const{data:valid}=await RPC('rpc_login',{p_username:S.user.username,p_password:old});
+  if(!Array.isArray(valid)||!valid.length){toast('Password lama salah','err');return;}
+  const{ok}=await RPC('rpc_change_password',{p_user_id:S.user.id,p_new_password:nw});
+  if(!ok){toast('Gagal ganti password','err');return;}
+  toast('Password berhasil diganti!','ok');closePwModal();
 }
 
-// ══════════════════════════════════════════
-// NAVIGATION
-// ══════════════════════════════════════════
-const mainScreens = ['home','sesi','kuis','lainnya'];
+// ── NAVIGASI ──
+const MAIN_SC=['home','sesi','kuis','lainnya'];
+const TITLES={home:'Sejarah Penebusan',sesi:'Sesi & Absensi',kuis:'Kuis',lainnya:'Menu',lb:'Leaderboard',notif:'Notifikasi',profil:'Profil Saya',hasil:'Hasil Kuis'};
 
-function showScreen(name, updateNav = true) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const el = document.getElementById(`screen-${name}`);
-  if (el) { el.classList.add('active'); el.classList.add('screen-fade'); }
-  STATE.currentScreen = name;
-
-  // Topbar title
-  const titles = {
-    home:'Sejarah Penebusan', sesi:'Sesi & Absensi', kuis:'Kuis',
-    lainnya:'Menu', leaderboard:'Leaderboard', gallery:'Gallery Foto',
-    notif:'Notifikasi', profil:'Profil Saya', hasil:'Hasil Kuis'
-  };
-  document.getElementById('topbarTitle').textContent = titles[name] || 'ASP';
-
-  // Bottom nav
-  if (updateNav && mainScreens.includes(name)) {
-    document.querySelectorAll('.bnav-item').forEach(b => {
-      b.classList.toggle('active', b.dataset.screen === name);
-    });
-  }
-
-  // Lazy load gallery
-  if (name === 'gallery') renderGalleryTabs();
-  if (name === 'notif') renderNotifikasi();
-  if (name === 'leaderboard') renderLeaderboard();
+function goScreen(name,load=true){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(`sc-${name}`)?.classList.add('active');
+  document.getElementById('tb-title').textContent=TITLES[name]||'ASP';
+  if(MAIN_SC.includes(name))document.querySelectorAll('.bi[data-sc]').forEach(b=>b.classList.toggle('active',b.dataset.sc===name));
+  if(load&&name==='notif')renderNotif();
+  if(load&&name==='lb')renderLB();
 }
 
-// ══════════════════════════════════════════
-// GANTI PASSWORD
-// ══════════════════════════════════════════
-function showPwModal() { document.getElementById('pwModal').classList.add('show'); }
-function closePwModal() { document.getElementById('pwModal').classList.remove('show'); ['pwOld','pwNew','pwConfirm'].forEach(id=>document.getElementById(id).value=''); }
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
 
-async function changePassword() {
-  const old = document.getElementById('pwOld').value;
-  const nw  = document.getElementById('pwNew').value;
-  const cf  = document.getElementById('pwConfirm').value;
-
-  if (!old || !nw || !cf) { showToast('Semua field harus diisi', 'error'); return; }
-  if (nw.length < 8) { showToast('Password baru minimal 8 karakter', 'error'); return; }
-  if (nw !== cf) { showToast('Konfirmasi password tidak cocok', 'error'); return; }
-
-  // Verify old password — verify_password RETURNS TABLE (array), bukan BOOLEAN
-  const { ok: vOk, data: vData } = await sbRpc('verify_password', { p_username: STATE.user.username, p_password: old });
-  if (!vOk || !Array.isArray(vData) || vData.length === 0) { showToast('Password lama salah', 'error'); return; }
-
-  // Update via RPC (hash baru)
-  const { ok } = await sbRpc('change_password', { p_user_id: STATE.user.id, p_new_password: nw });
-  if (!ok) { showToast('Gagal mengganti password', 'error'); return; }
-
-  showToast('Password berhasil diganti!', 'success');
-  closePwModal();
-}
-
-// ══════════════════════════════════════════
-// LOGOUT
-// ══════════════════════════════════════════
-function logout() {
-  if (!confirm('Yakin ingin logout?')) return;
-  localStorage.removeItem('asp_user');
-  localStorage.removeItem('asp_token');
-  window.location.href = 'login.html';
-}
-
-// ══════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════
-function showToast(msg, type='') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = `toast ${type} show`;
-  setTimeout(()=>t.classList.remove('show'), 2500);
-}
-
-function formatDate(str) {
-  const d = new Date(str);
-  return d.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-}
-
-function formatDateShort(str) {
-  const d = new Date(str);
-  return d.toLocaleDateString('id-ID', { day:'numeric', month:'short' });
-}
-
-function timeAgo(str) {
-  const diff = Date.now() - new Date(str).getTime();
-  const mins = Math.floor(diff/60000);
-  if (mins < 1) return 'Baru saja';
-  if (mins < 60) return `${mins} menit lalu`;
-  const hrs = Math.floor(mins/60);
-  if (hrs < 24) return `${hrs} jam lalu`;
-  const days = Math.floor(hrs/24);
-  return `${days} hari lalu`;
-}
+function doLogout(){if(!confirm('Yakin ingin logout?'))return;localStorage.removeItem('asp_user');location.href='login.html';}
+function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),2500);}
+function fmtDate(s){return new Date(s).toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
+function timeAgo(s){const d=Math.floor((Date.now()-new Date(s))/60000);if(d<1)return'Baru saja';if(d<60)return`${d}m lalu`;if(d<1440)return`${Math.floor(d/60)}j lalu`;return`${Math.floor(d/1440)}h lalu`;}
 </script>
-
-<!--
-===================================================
-CATATAN DEVELOPER — Tambahkan RPC ini di Supabase:
-
-CREATE OR REPLACE FUNCTION change_password(
-  p_user_id UUID,
-  p_new_password TEXT
-) RETURNS VOID AS $$
-BEGIN
-  UPDATE users
-  SET password_hash = crypt(p_new_password, gen_salt('bf', 10)),
-      updated_at = NOW()
-  WHERE id = p_user_id;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-GRANT EXECUTE ON FUNCTION change_password TO anon;
-GRANT EXECUTE ON FUNCTION change_password TO authenticated;
-===================================================
--->
 </body>
 </html>

@@ -4,660 +4,144 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Login — Sejarah Penebusan ASP</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --teal:       #1DB89A;
-    --teal-dark:  #0F8870;
-    --teal-deep:  #0A6557;
-    --teal-light: #E1F5EE;
-    --teal-mid:   #9FE1CB;
-    --green:      #3CB84A;
-    --gray:       #4D4D4D;
-    --muted:      #888;
-    --border:     #E8E8E8;
-    --danger:     #E24B4A;
-    --white:      #FFFFFF;
-    --bg:         #F0FAF7;
-  }
-
-  html, body {
-    height: 100%;
-    font-family: 'Nunito', sans-serif;
-    background: var(--bg);
-    overflow-x: hidden;
-  }
-
-  /* ── BACKGROUND DECORATION ── */
-  .bg-decor {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
-    pointer-events: none;
-  }
-  .bg-circle {
-    position: absolute;
-    border-radius: 50%;
-    opacity: 0.12;
-    background: var(--teal);
-  }
-  .bg-circle.c1 { width: 300px; height: 300px; top: -80px; right: -80px; }
-  .bg-circle.c2 { width: 200px; height: 200px; bottom: 60px; left: -60px; opacity: 0.08; }
-  .bg-circle.c3 { width: 120px; height: 120px; top: 40%; left: 60%; opacity: 0.06; }
-
-  /* ── MAIN CONTAINER ── */
-  .container {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px 20px;
-  }
-
-  /* ── CARD ── */
-  .card {
-    width: 100%;
-    max-width: 400px;
-    background: white;
-    border-radius: 24px;
-    overflow: hidden;
-    box-shadow: 0 8px 40px rgba(29, 184, 154, 0.12), 0 2px 8px rgba(0,0,0,0.06);
-    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── HERO ── */
-  .hero {
-    background: linear-gradient(145deg, var(--teal) 0%, var(--teal-dark) 60%, var(--teal-deep) 100%);
-    padding: 36px 28px 28px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    width: 220px; height: 220px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.06);
-    top: -60px; right: -60px;
-  }
-  .hero::after {
-    content: '';
-    position: absolute;
-    width: 140px; height: 140px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.04);
-    bottom: -40px; left: -30px;
-  }
-
-  /* LOGO SVG */
-  .logo-wrap {
-    position: relative;
-    z-index: 1;
-    margin-bottom: 16px;
-    animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
-  }
-  @keyframes popIn {
-    from { opacity: 0; transform: scale(0.7); }
-    to   { opacity: 1; transform: scale(1); }
-  }
-  .logo-bg {
-    width: 72px; height: 72px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 20px;
-    display: flex; align-items: center; justify-content: center;
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255,255,255,0.2);
-  }
-  .logo-svg { width: 44px; height: 44px; }
-
-  .hero-title {
-    position: relative; z-index: 1;
-    font-size: 18px; font-weight: 900;
-    color: white; letter-spacing: 1.5px;
-    text-align: center; margin-bottom: 4px;
-    animation: fadeIn 0.5s ease 0.3s both;
-  }
-  .hero-sub {
-    position: relative; z-index: 1;
-    font-size: 10px; color: rgba(255,255,255,0.7);
-    letter-spacing: 2px; text-align: center;
-    font-family: 'Nunito Sans', sans-serif; font-weight: 300;
-    animation: fadeIn 0.5s ease 0.4s both;
-  }
-  .hero-badge {
-    position: relative; z-index: 1;
-    margin-top: 14px;
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 20px;
-    padding: 5px 16px;
-    font-size: 11px; font-weight: 700;
-    color: rgba(255,255,255,0.9);
-    letter-spacing: 0.5px;
-    animation: fadeIn 0.5s ease 0.5s both;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── FORM ── */
-  .form-wrap {
-    padding: 28px 28px 24px;
-    animation: fadeIn 0.5s ease 0.3s both;
-  }
-
-  .form-title {
-    font-size: 15px; font-weight: 800; color: var(--gray);
-    margin-bottom: 4px;
-  }
-  .form-hint {
-    font-size: 12px; color: var(--muted);
-    margin-bottom: 24px; font-family: 'Nunito Sans', sans-serif;
-  }
-
-  .field { margin-bottom: 16px; }
-  .field label {
-    display: block;
-    font-size: 12px; font-weight: 700; color: var(--gray);
-    margin-bottom: 6px; letter-spacing: 0.3px;
-  }
-
-  .input-wrap {
-    position: relative;
-    display: flex; align-items: center;
-  }
-  .input-icon {
-    position: absolute; left: 14px;
-    color: var(--teal-mid); font-size: 18px;
-    transition: color 0.2s;
-    display: flex; align-items: center;
-  }
-  .field:focus-within .input-icon { color: var(--teal); }
-
-  .input-wrap input {
-    width: 100%;
-    padding: 13px 14px 13px 44px;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    font-size: 14px; font-family: 'Nunito', sans-serif;
-    color: var(--gray);
-    background: #FAFAFA;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-    -webkit-appearance: none;
-  }
-  .input-wrap input::placeholder { color: #C0C0C0; }
-  .input-wrap input:focus {
-    border-color: var(--teal);
-    background: white;
-    box-shadow: 0 0 0 3px rgba(29, 184, 154, 0.1);
-  }
-  .input-wrap input.error {
-    border-color: var(--danger);
-    box-shadow: 0 0 0 3px rgba(226, 75, 74, 0.1);
-  }
-
-  /* toggle password */
-  .toggle-pw {
-    position: absolute; right: 14px;
-    background: none; border: none; cursor: pointer;
-    color: var(--muted); font-size: 18px;
-    display: flex; align-items: center;
-    padding: 4px; transition: color 0.2s;
-  }
-  .toggle-pw:hover { color: var(--teal); }
-
-  /* error message */
-  .error-msg {
-    display: none;
-    font-size: 11px; color: var(--danger);
-    margin-top: 5px; font-weight: 600;
-  }
-  .error-msg.show { display: block; }
-
-  /* ── ALERT BOX ── */
-  .alert {
-    display: none;
-    background: #FCE8E8; border: 1px solid #F5C6C6;
-    border-radius: 10px; padding: 10px 14px;
-    font-size: 12px; color: #A32D2D; font-weight: 600;
-    margin-bottom: 16px; align-items: center; gap: 8px;
-  }
-  .alert.show { display: flex; }
-  .alert svg { flex-shrink: 0; }
-
-  /* ── BUTTON ── */
-  .btn-login {
-    width: 100%;
-    background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
-    color: white; border: none; border-radius: 12px;
-    padding: 14px; font-size: 15px; font-weight: 800;
-    font-family: 'Nunito', sans-serif;
-    cursor: pointer; letter-spacing: 0.3px;
-    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
-    box-shadow: 0 4px 14px rgba(29, 184, 154, 0.35);
-    position: relative; overflow: hidden;
-    margin-bottom: 16px;
-  }
-  .btn-login:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(29, 184, 154, 0.45);
-  }
-  .btn-login:active:not(:disabled) { transform: translateY(0); }
-  .btn-login:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-
-  /* loading spinner */
-  .btn-login .spinner {
-    display: none;
-    width: 18px; height: 18px;
-    border: 2px solid rgba(255,255,255,0.4);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    margin: 0 auto;
-  }
-  .btn-login.loading .btn-text { display: none; }
-  .btn-login.loading .spinner { display: block; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .forgot {
-    text-align: center;
-    font-size: 12px; color: var(--muted);
-    font-family: 'Nunito Sans', sans-serif;
-  }
-  .forgot a {
-    color: var(--teal); font-weight: 700;
-    text-decoration: none;
-  }
-  .forgot a:hover { text-decoration: underline; }
-
-  /* ── FOOTER ── */
-  .footer {
-    margin-top: 20px;
-    text-align: center;
-    font-size: 11px; color: var(--muted);
-    font-family: 'Nunito Sans', sans-serif;
-    animation: fadeIn 0.5s ease 0.6s both;
-  }
-  .footer span { color: var(--teal); font-weight: 700; }
-
-  /* ── VERSION TAG ── */
-  .version-tag {
-    position: fixed; bottom: 12px; right: 14px;
-    font-size: 10px; color: rgba(0,0,0,0.2);
-    font-family: 'Nunito Sans', sans-serif;
-  }
-
-  /* ── TOAST ── */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--gray); color: white;
-    padding: 10px 18px; border-radius: 20px;
-    font-size: 13px; font-weight: 600;
-    white-space: nowrap;
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 999;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .toast.success { background: var(--teal); }
-  .toast.error   { background: var(--danger); }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--teal:#1DB89A;--teal-dark:#0F8870;--gray:#4D4D4D;--muted:#888;--border:#E8E8E8;--danger:#E24B4A;--bg:#F0FAF7}
+html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg)}
+.wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{width:100%;max-width:400px;background:white;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(29,184,154,0.12)}
+.hero{background:linear-gradient(145deg,var(--teal),var(--teal-dark));padding:32px 24px;text-align:center}
+.logo{width:60px;height:60px;background:rgba(255,255,255,0.15);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.logo svg{width:38px;height:38px}
+.app-name{font-size:16px;font-weight:900;color:white;letter-spacing:1px}
+.tagline{font-size:10px;color:rgba(255,255,255,0.7);letter-spacing:1.5px;margin-top:3px}
+.badge{margin-top:12px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:4px 14px;display:inline-block;font-size:11px;color:white;font-weight:700}
+.body{padding:24px}
+.alert{display:none;background:#FCE8E8;border:1px solid #F5C6C6;border-radius:10px;padding:10px 14px;font-size:12px;color:#A32D2D;font-weight:600;margin-bottom:14px}
+.alert.show{display:block}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--gray);margin-bottom:5px}
+.input-wrap{position:relative}
+.input-wrap input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Nunito',sans-serif;color:var(--gray);outline:none;background:#FAFAFA}
+.input-wrap input:focus{border-color:var(--teal);background:white}
+.err-msg{display:none;font-size:11px;color:var(--danger);font-weight:600;margin-top:4px}
+.err-msg.show{display:block}
+.toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;display:flex;align-items:center}
+.btn{width:100%;background:linear-gradient(135deg,var(--teal),var(--teal-dark));color:white;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:14px}
+.btn:disabled{opacity:0.7;cursor:not-allowed}
+.forgot{text-align:center;font-size:12px;color:var(--muted)}
+.forgot a{color:var(--teal);font-weight:700;text-decoration:none}
+.spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto}
+.btn.loading .btn-text{display:none}
+.btn.loading .spinner{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
-
-<!-- Background decoration -->
-<div class="bg-decor">
-  <div class="bg-circle c1"></div>
-  <div class="bg-circle c2"></div>
-  <div class="bg-circle c3"></div>
-</div>
-
-<div class="container">
-  <div class="card">
-
-    <!-- Hero -->
-    <div class="hero">
-      <div class="logo-wrap">
-        <div class="logo-bg">
-          <svg class="logo-svg" viewBox="0 0 48 48" fill="none">
-            <!-- Book left -->
-            <rect x="2" y="28" width="19" height="14" rx="2.5" fill="white"/>
-            <!-- Book right -->
-            <rect x="27" y="28" width="19" height="14" rx="2.5" fill="white"/>
-            <!-- Book spine -->
-            <rect x="20" y="26" width="8" height="16" rx="1" fill="rgba(255,255,255,0.5)"/>
-            <!-- Tree trunk -->
-            <rect x="22" y="18" width="4" height="10" rx="1.5" fill="rgba(255,255,255,0.85)"/>
-            <!-- Leaves -->
-            <ellipse cx="15" cy="17" rx="2.5" ry="2.5" fill="rgba(255,255,255,0.95)"/>
-            <ellipse cx="24" cy="11" rx="2.5" ry="2.5" fill="rgba(255,255,255,0.95)"/>
-            <ellipse cx="33" cy="17" rx="2.5" ry="2.5" fill="rgba(255,255,255,0.95)"/>
-            <ellipse cx="19" cy="9"  rx="1.8" ry="1.8" fill="rgba(255,255,255,0.75)"/>
-            <ellipse cx="29" cy="9"  rx="1.8" ry="1.8" fill="rgba(255,255,255,0.75)"/>
-            <ellipse cx="12" cy="11" rx="1.5" ry="1.5" fill="rgba(255,255,255,0.6)"/>
-            <ellipse cx="36" cy="11" rx="1.5" ry="1.5" fill="rgba(255,255,255,0.6)"/>
-            <!-- Branches -->
-            <rect x="15" y="17" width="3" height="9" rx="1" fill="rgba(255,255,255,0.8)"/>
-            <rect x="30" y="17" width="3" height="9" rx="1" fill="rgba(255,255,255,0.8)"/>
+<div class="wrap">
+<div class="card">
+  <div class="hero">
+    <div class="logo">
+      <svg viewBox="0 0 48 48" fill="none">
+        <rect x="2" y="28" width="18" height="13" rx="2.5" fill="white"/>
+        <rect x="28" y="28" width="18" height="13" rx="2.5" fill="white"/>
+        <rect x="19" y="26" width="10" height="15" rx="1" fill="rgba(255,255,255,0.4)"/>
+        <rect x="21" y="16" width="6" height="12" rx="2" fill="rgba(255,255,255,0.85)"/>
+        <ellipse cx="15" cy="16" rx="2.5" ry="2.5" fill="rgba(255,255,255,0.95)"/>
+        <ellipse cx="24" cy="10" rx="2.5" ry="2.5" fill="rgba(255,255,255,0.95)"/>
+        <ellipse cx="33" cy="16" rx="2.5" ry="2.5" fill="rgba(255,255,255,0.95)"/>
+        <ellipse cx="19" cy="8" rx="1.8" ry="1.8" fill="rgba(255,255,255,0.7)"/>
+        <ellipse cx="29" cy="8" rx="1.8" ry="1.8" fill="rgba(255,255,255,0.7)"/>
+      </svg>
+    </div>
+    <div class="app-name">SEJARAH PENEBUSAN</div>
+    <div class="tagline">BENIH KEBENARAN BUAH KEHIDUPAN</div>
+    <div class="badge">Program ASP — Hamba Tuhan</div>
+  </div>
+  <div class="body">
+    <div class="alert" id="alert">Username atau password salah.</div>
+    <div class="field">
+      <label>Username</label>
+      <div class="input-wrap">
+        <input type="text" id="username" placeholder="Masukkan username" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+      </div>
+      <div class="err-msg" id="usernameErr">Username tidak boleh kosong</div>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <div class="input-wrap">
+        <input type="password" id="password" placeholder="Masukkan password" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+        <button class="toggle-pw" type="button" onclick="togglePw()">
+          <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
           </svg>
-        </div>
-      </div>
-      <div class="hero-title">SEJARAH PENEBUSAN</div>
-      <div class="hero-sub">BENIH KEBENARAN BUAH KEHIDUPAN</div>
-      <div class="hero-badge">Program ASP — Hamba Tuhan</div>
-    </div>
-
-    <!-- Form -->
-    <div class="form-wrap">
-      <div class="form-title">Selamat Datang</div>
-      <div class="form-hint">Masuk dengan akun yang diberikan admin</div>
-
-      <!-- Alert error -->
-      <div class="alert" id="alertBox">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-        <span id="alertMsg">Username atau password salah.</span>
-      </div>
-
-      <form id="loginForm" novalidate>
-
-        <!-- Username -->
-        <div class="field">
-          <label for="username">Username</label>
-          <div class="input-wrap">
-            <span class="input-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-              </svg>
-            </span>
-            <input
-              type="text" id="username" name="username"
-              placeholder="Masukkan username"
-              autocomplete="new-password" autocapitalize="none" spellcheck="false"
-              onfocus="this.removeAttribute('readonly')" readonly
-            >
-          </div>
-          <div class="error-msg" id="usernameErr">Username tidak boleh kosong</div>
-        </div>
-
-        <!-- Password -->
-        <div class="field">
-          <label for="password">Password</label>
-          <div class="input-wrap">
-            <span class="input-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-            </span>
-            <input
-              type="password" id="password" name="password"
-              placeholder="Masukkan password"
-              autocomplete="new-password"
-              onfocus="this.removeAttribute('readonly')" readonly
-            >
-            <button type="button" class="toggle-pw" id="togglePw" aria-label="Tampilkan password">
-              <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-              </svg>
-            </button>
-          </div>
-          <div class="error-msg" id="passwordErr">Password tidak boleh kosong</div>
-        </div>
-
-        <button type="submit" class="btn-login" id="btnLogin">
-          <span class="btn-text">Masuk</span>
-          <div class="spinner"></div>
         </button>
-
-      </form>
-
-      <div class="forgot">
-        Lupa password? <a href="#" onclick="showForgot(event)">Hubungi admin</a>
       </div>
+      <div class="err-msg" id="passwordErr">Password tidak boleh kosong</div>
     </div>
-  </div>
-
-  <div class="footer">
-    &copy; 2025 <span>Yayasan Damai Sejahtera Utama</span>
+    <button class="btn" id="btn" onclick="login()">
+      <span class="btn-text">Masuk</span>
+      <div class="spinner"></div>
+    </button>
+    <div class="forgot">Lupa password? <a href="#">Hubungi admin</a></div>
   </div>
 </div>
-
-<div class="version-tag">v1.0</div>
-<div class="toast" id="toast"></div>
-
+</div>
 <script>
-// ── CONFIG SUPABASE ──
-const SUPABASE_URL  = 'https://zpewvsezyhsjqemwuoag.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwZXd2c2V6eWhzanFlbXd1b2FnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjU4MDYsImV4cCI6MjA5NTMwMTgwNn0.78C0QBfWOnink16LfiFjRY2aXcX9Nsj0IrPT57yagfo';
+const SB_URL = 'SUPABASE_URL_HERE';
+const SB_KEY = 'SUPABASE_ANON_KEY_HERE';
 
-// ── SUPABASE HELPER ──
-async function sbFetch(path, opts = {}) {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    headers: {
-      'apikey': SUPABASE_ANON,
-      'Authorization': `Bearer ${SUPABASE_ANON}`,
-      'Content-Type': 'application/json',
-      ...opts.headers
-    },
-    ...opts
+async function rpc(fn, body) {
+  const r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, {
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'},
+    body:JSON.stringify(body)
   });
-  const data = await res.json();
-  return { ok: res.ok, status: res.status, data };
+  return {ok:r.ok, data:await r.json()};
 }
 
-// ── SESSION ──
-const Session = {
-  set(user) {
-    localStorage.setItem('asp_user', JSON.stringify(user));
-    // Simpan identifier user agar sb() bisa membedakan anon vs user session
-    localStorage.setItem('asp_token', SUPABASE_ANON);
-    localStorage.setItem('asp_user_id', user.id);
-  },
-  get() {
-    try { return JSON.parse(localStorage.getItem('asp_user')); }
-    catch { return null; }
-  },
-  clear() { localStorage.removeItem('asp_user'); localStorage.removeItem('asp_token'); }
-};
-
-// ── REDIRECT jika sudah login ──
-window.addEventListener('DOMContentLoaded', () => {
-  const user = Session.get();
-  if (user) redirectByRole(user.role);
+window.addEventListener('DOMContentLoaded',()=>{
+  const u=getUser(); if(u) redirect(u.role);
 });
 
-function redirectByRole(role) {
-  if (role === 'admin') {
-    window.location.href = 'admin.html';
-  } else {
-    window.location.href = 'peserta.html';
-  }
+function getUser(){try{return JSON.parse(localStorage.getItem('asp_user'));}catch{return null;}}
+function setUser(u){localStorage.setItem('asp_user',JSON.stringify(u));}
+function redirect(role){window.location.href=role==='admin'?'admin.html':'peserta.html';}
+
+function togglePw(){
+  const i=document.getElementById('password');
+  i.type=i.type==='password'?'text':'password';
 }
 
-// ── TOGGLE PASSWORD ──
-const togglePw = document.getElementById('togglePw');
-const pwInput  = document.getElementById('password');
-const eyeIcon  = document.getElementById('eyeIcon');
-
-togglePw.addEventListener('click', () => {
-  const isHidden = pwInput.type === 'password';
-  pwInput.type = isHidden ? 'text' : 'password';
-  eyeIcon.innerHTML = isHidden
-    ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`
-    : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
-});
-
-// ── FORM VALIDATION ──
-function validate() {
-  let valid = true;
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value;
-
-  // Reset errors
+async function login(){
+  const username=document.getElementById('username').value.trim();
+  const password=document.getElementById('password').value;
+  let ok=true;
+  document.getElementById('alert').classList.remove('show');
   document.getElementById('usernameErr').classList.remove('show');
   document.getElementById('passwordErr').classList.remove('show');
-  document.getElementById('username').classList.remove('error');
-  document.getElementById('password').classList.remove('error');
-  document.getElementById('alertBox').classList.remove('show');
+  if(!username){document.getElementById('usernameErr').classList.add('show');ok=false;}
+  if(!password){document.getElementById('passwordErr').classList.add('show');ok=false;}
+  if(!ok) return;
 
-  if (!username) {
-    document.getElementById('usernameErr').classList.add('show');
-    document.getElementById('username').classList.add('error');
-    valid = false;
-  }
-  if (!password) {
-    document.getElementById('passwordErr').classList.add('show');
-    document.getElementById('password').classList.add('error');
-    valid = false;
-  }
-  return valid;
-}
+  const btn=document.getElementById('btn');
+  btn.disabled=true; btn.classList.add('loading');
 
-// ── LOGIN ──
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  if (!validate()) return;
-
-  const btn = document.getElementById('btnLogin');
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value;
-
-  // Loading state
-  btn.disabled = true;
-  btn.classList.add('loading');
-
-  try {
-    // Verify password via RPC — returns array of user data jika benar, [] jika salah
-    const { ok: rpcOk, data: rpcData } = await sbFetch('rpc/verify_password', {
-      method: 'POST',
-      body: JSON.stringify({ p_username: username, p_password: password })
-    });
-
-    if (!rpcOk || !rpcData || !Array.isArray(rpcData) || rpcData.length === 0) {
-      showAlert('Username atau password salah.');
-      return;
+  try{
+    const{ok:rok,data}=await rpc('rpc_login',{p_username:username,p_password:password});
+    if(!rok||!Array.isArray(data)||data.length===0){
+      document.getElementById('alert').classList.add('show'); return;
     }
-
-    const user = rpcData[0];
-
-    // Update last_login
-    await sbFetch(`users?id=eq.${user.id}`, {
-      method: 'PATCH',
-      headers: { 'Prefer': 'return=minimal' },
-      body: JSON.stringify({ last_login_at: new Date().toISOString() })
-    });
-
-    // Log activity
-    await sbFetch('activity_logs', {
-      method: 'POST',
-      headers: { 'Prefer': 'return=minimal' },
-      body: JSON.stringify({
-        user_id: user.id,
-        action: 'user_login',
-        metadata: { username: user.username }
-      })
-    });
-
-    // Simpan session
-    Session.set(user);
-
-    // Success feedback
-    showToast('Berhasil masuk!', 'success');
-
-    // Redirect sesuai role
-    setTimeout(() => redirectByRole(user.role), 800);
-
-  } catch (err) {
-    console.error('Login error:', err);
-    showAlert('Terjadi kesalahan. Periksa koneksi internet Anda.');
-  } finally {
-    btn.disabled = false;
-    btn.classList.remove('loading');
+    setUser(data[0]); redirect(data[0].role);
+  }catch(e){
+    document.getElementById('alert').textContent='Gagal terhubung. Coba lagi.';
+    document.getElementById('alert').classList.add('show');
+  }finally{
+    btn.disabled=false; btn.classList.remove('loading');
   }
-});
-
-// ── HELPERS ──
-function showAlert(msg) {
-  document.getElementById('alertMsg').textContent = msg;
-  document.getElementById('alertBox').classList.add('show');
-  // Shake animation
-  document.querySelector('.card').style.animation = 'none';
-  setTimeout(() => {
-    document.querySelector('.card').style.animation = '';
-  }, 10);
 }
-
-function showToast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `toast ${type} show`;
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-function showForgot(e) {
-  e.preventDefault();
-  showToast('Hubungi admin untuk reset password', '');
-}
-
-// Clear error on input
-['username', 'password'].forEach(id => {
-  document.getElementById(id).addEventListener('input', () => {
-    document.getElementById(id).classList.remove('error');
-    document.getElementById(`${id}Err`).classList.remove('show');
-    document.getElementById('alertBox').classList.remove('show');
-  });
-});
+document.addEventListener('keydown',e=>{if(e.key==='Enter')login();});
 </script>
-
-<!-- 
-===================================================
-CATATAN DEVELOPER
-===================================================
-Untuk login berfungsi penuh, perlu tambahkan
-RPC function di Supabase SQL Editor:
-
-CREATE OR REPLACE FUNCTION verify_password(
-  p_username TEXT,
-  p_password TEXT
-)
-RETURNS BOOLEAN AS $$
-DECLARE
-  v_hash TEXT;
-BEGIN
-  SELECT password_hash INTO v_hash
-  FROM users
-  WHERE username = p_username AND is_active = TRUE;
-
-  IF v_hash IS NULL THEN
-    RETURN FALSE;
-  END IF;
-
-  RETURN (crypt(p_password, v_hash) = v_hash);
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-GRANT EXECUTE ON FUNCTION verify_password TO anon;
-===================================================
--->
 </body>
 </html>
